@@ -42,6 +42,6 @@ In this example we run the tic-tac-toe game. But you can try to run other games 
 
 ### Notes
 
-If there are/is mistake(s) in this repository you can open [issue](https://github.com/MohammadAlimul/popular-games-clone-ggez-rs/issues) or you can hit me on discord 'Alim#8261'. 
+If there are/is mistake(s) in this repository you can open [issue](https://github.com/MohammadAlimul/popular-games-clone-ggez-rs/issues) or you can hit me on discord `Alim#8261`. 
 
 If you want to discuss about rust or game development feel free to contact me via discord!
