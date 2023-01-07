@@ -14,7 +14,7 @@ const SCREEN_SIZE: (f32, f32) = (720., 480.);
 
 const BOARD_DIMENSION: (f32, f32) = (240., 240.);
 
-const GRID_SIZE: (usize, usize) = (5, 5);
+const GRID_SIZE: (usize, usize) = (3, 3);
 
 const GRID_DIMENSION: (f32, f32) = (BOARD_DIMENSION.0 / GRID_SIZE.0 as f32, BOARD_DIMENSION.1 / GRID_SIZE.1 as f32);
 
