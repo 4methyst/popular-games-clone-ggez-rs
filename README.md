@@ -35,7 +35,7 @@ here's how to build and run the code.
 ```
 git clone https://github.com/MohammadAlimul/popular-games-clone-ggez-rs.git
 cd popular-games-clone-ggez-rs
-cargo run --release --example tic-tac-toe
+cargo run --release --p tic-tac-toe
 ```
 
 In this example we run the tic-tac-toe game. But you can try to run other games too!
