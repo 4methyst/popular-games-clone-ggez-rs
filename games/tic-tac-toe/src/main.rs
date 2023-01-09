@@ -337,7 +337,7 @@ fn main() -> GameResult {
     let (ctx, events_loop) = 
         ggez::ContextBuilder::new(
             "Tic tac toe", 
-            "Mohammad Alimul")
+            "4methyst")
         .window_setup(
             ggez::conf::WindowSetup::default()
             .title("Tic tac toe"))

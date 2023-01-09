@@ -26,7 +26,7 @@ You can try the game by compiling the source code or you can just download from 
 
 ### Code
 
-I put all of the codes in the example directory. Go take a look if you want. 
+I put all of the codes in the games directory. Each game is a standalone package. Go take a look if you want. 
 
 If you are new to rust and want to run this code make sure you have rust and cargo installed. Go [here](https://rustup.rs) if you haven't. This repo use rustc version 1.66.0.
 
