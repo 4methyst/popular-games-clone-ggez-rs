@@ -7,7 +7,6 @@ use ggez::{
     input::mouse::MouseButton,
     Context, GameResult,
 };
-// use std::env;
 
 const DESIRED_FPS: u32 = 30;
 
@@ -84,7 +83,6 @@ struct MainState {
     winner: Player,
     text_map: BTreeMap<&'static str, amst::Text>,
     gameover: bool,
-    frames: usize,
 }
 
 impl MainState {
@@ -96,7 +94,6 @@ impl MainState {
             winner: Player::None,
             text_map: MainState::init_text(),
             gameover: false,
-            frames: 0,
         }
     }
 
@@ -336,11 +333,6 @@ impl event::EventHandler<ggez::GameError> for MainState {
         }
 
         canvas.finish(ctx)?;
-        
-        self.frames += 1;
-        if self.frames % 10 == 0 {
-            println!("FPS: {}", ctx.time.fps());
-        }
 
         Ok(())
     }
