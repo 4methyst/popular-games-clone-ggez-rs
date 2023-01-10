@@ -32,48 +32,6 @@ enum Sign {
     X,
     O,
 }
-
-// impl Sign {
-//     fn draw(&self, ctx: &mut Context, canvas: &mut graphics::Canvas, pos: Vec2) -> GameResult{
-//         let mut sign= Vec::new();
-//         match *self {
-//             Sign::X => {
-//                 for j in 0..4 {
-//                     let points = [
-//                         Point2 { x: 0., y: 0. },
-//                         Point2 {
-//                             x: 0. + (45. + 90. * j as f32).to_radians().cos() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-//                             y: 0. + (45. + 90. * j as f32).to_radians().sin() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-//                         }
-//                     ];
-//                     sign.push(graphics::Mesh::new_line(ctx, &points, 6., Color::WHITE)?);
-//                 }
-//             },
-//             Sign::O => {
-//                 sign.push(   
-//                     graphics::Mesh::new_circle(
-//                         ctx, 
-//                         DrawMode::Stroke(
-//                             graphics::StrokeOptions::default()
-//                             .with_line_width(6.)
-//                         ), 
-//                         Point2 { x: 0., y: 0. }, 
-//                         (GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 * 3. / 16., 
-//                         0.1, 
-//                         Color::WHITE,
-//                     )?
-//                 );
-//             },
-//             Sign::None => {}, 
-//         };
-
-//         for i in 0..sign.len() {
-//             canvas.draw(&sign[i], pos.clone());
-//         }
-//         Ok(())
-//     }
-// }
-
 struct Board {
     rect: Vec<Rect>,
     sign: Vec<Sign>,
