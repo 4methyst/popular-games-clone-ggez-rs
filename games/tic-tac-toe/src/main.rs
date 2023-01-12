@@ -31,12 +31,13 @@ enum Sign {
     X,
     O,
 }
+
 struct Board {
     rect: Vec<Rect>,
     sign: Vec<Sign>,
     grid: graphics::Mesh,
     sign_x: [graphics::Mesh; 4],
-    sign_o: [graphics::Mesh; 1]
+    sign_o: [graphics::Mesh; 1],
 }
 
 impl Board {
@@ -70,6 +71,20 @@ impl Board {
     }
 }
 
+#[derive(Clone)]
+struct Button {
+    rect: Rect,
+    mesh: graphics::Mesh,
+    text: ggezText,
+}
+
+impl Button {
+    fn draw(&mut self, canvas: &mut graphics::Canvas) {
+        canvas.draw(&self.mesh, graphics::DrawParam::default());
+        canvas.draw(&self.text, Vec2::new(self.rect.x + self.rect.w/2., self.rect.y + self.rect.h/2.));
+    }
+}
+
 #[derive(Clone, Copy, PartialEq)]
 enum Player {
     None,
@@ -83,17 +98,21 @@ struct MainState {
     winner: Player,
     text_map: BTreeMap<&'static str, amst::Text>,
     gameover: bool,
+    background: graphics::Mesh,
+    buttons: BTreeMap<&'static str, Button>,
 }
 
 impl MainState {
     fn new(ctx: &Context) -> Self {
 
         MainState {
-            board: MainState::init_board(&ctx),
+            board: Self::init_board(&ctx),
             player: Player::P1,
             winner: Player::None,
-            text_map: MainState::init_text(),
+            text_map: Self::init_text(),
             gameover: false,
+            background: Self::init_background(&ctx),
+            buttons: Self::init_button(&ctx),
         }
     }
 
@@ -111,7 +130,7 @@ impl MainState {
         let grid = graphics::Mesh::new_rectangle(
             ctx, DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
-                .with_line_width(6.)
+                .with_line_width(4.)
                 .with_line_cap(graphics::LineCap::Square)
                 .with_line_join(graphics::LineJoin::Bevel)
             ),
@@ -132,7 +151,7 @@ impl MainState {
                     y: 0. + (45. + 90. * j as f32).to_radians().sin() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
                 }
             ];
-            sign_x.push(graphics::Mesh::new_line(ctx, &points, 6., Color::WHITE).unwrap());
+            sign_x.push(graphics::Mesh::new_line(ctx, &points, 4., Color::WHITE).unwrap());
         }
         let sign_x: [graphics::Mesh; 4] = [
             sign_x[0].clone(),
@@ -145,7 +164,7 @@ impl MainState {
                 ctx, 
                 DrawMode::Stroke(
                     graphics::StrokeOptions::default()
-                    .with_line_width(6.)
+                    .with_line_width(4.)
                 ), 
                 Point2 { x: 0., y: 0. }, 
                 (GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 * 3. / 16., 
@@ -209,6 +228,75 @@ impl MainState {
         };
         text_map.insert("2_Winner", text);
         text_map
+    }
+
+    fn init_background(ctx: &Context) -> graphics::Mesh {
+        let vertices = [
+            graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], uv: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], color: [0.015, 0., 0.02, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0, SCREEN_SIZE.1], uv: [SCREEN_SIZE.0, SCREEN_SIZE.1], color: [0.001, 0., 0.001, 1.] },
+            graphics::Vertex { position: [0., SCREEN_SIZE.1], uv: [0., SCREEN_SIZE.1], color: [0., 0., 0.01, 1.] },
+        ];
+        let indices = [0, 1, 2, 2, 1, 3, 3, 2, 4, 4, 2, 0];
+        graphics::Mesh::from_data(
+            ctx, 
+            graphics::MeshData { 
+                vertices: &vertices, 
+                indices: &indices 
+            } 
+        )
+    }
+
+    fn init_button(ctx: &Context) -> BTreeMap<&'static str, Button> {
+        let mut buttons = BTreeMap::new();
+        let rect = Rect::new(240., 395., 80., 20.);
+        let mesh = graphics::Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke(
+                graphics::StrokeOptions::default()
+                .with_line_width(1.)
+                .with_line_join(graphics::LineJoin::Bevel)
+            ),  
+            rect, 
+            Color::WHITE
+        ).unwrap();
+        let text = ggezText::new(
+            TextFragment::new("(R) Restart")
+            .color(Color::WHITE)
+            .scale(12.)
+        ).set_layout(graphics::TextLayout::center()).to_owned();
+        let button = Button {
+            rect, 
+            mesh,
+            text
+        };
+        buttons.insert("0_restart", button);
+
+        let rect = Rect::new(400., 395., 80., 20.);
+        let mesh = graphics::Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke(
+                graphics::StrokeOptions::default()
+                .with_line_width(1.)
+                .with_line_join(graphics::LineJoin::Bevel)
+            ),  
+            rect, 
+            Color::WHITE
+        ).unwrap();
+        let text = ggezText::new(
+            TextFragment::new("(Esc) Quit")
+            .color(Color::WHITE)
+            .scale(12.)
+        ).set_layout(graphics::TextLayout::center()).to_owned();
+        let button = Button {
+            rect, 
+            mesh,
+            text
+        };
+        buttons.insert("1_quit", button);
+
+        buttons
     }
 
     fn state_update(&mut self) {
@@ -300,11 +388,12 @@ impl MainState {
 
     fn restart(&mut self) {
         self.gameover = false;
+        self.player = Player::P1;
         self.winner = Player::None;
         for i in 0..GRID_SIZE.0 * GRID_SIZE.1 {
             self.board.rect[i] = Rect {
                 x: 240. + (i % GRID_SIZE.0) as f32 * GRID_DIMENSION.0,
-                y: 140. + (i / GRID_SIZE.0) as f32 * GRID_DIMENSION.1,
+                y: 135. + (i / GRID_SIZE.0) as f32 * GRID_DIMENSION.1,
                 w: GRID_DIMENSION.0,
                 h: GRID_DIMENSION.1,
             };
@@ -325,12 +414,19 @@ impl event::EventHandler<ggez::GameError> for MainState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas =
             graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
+
+        canvas.draw(&self.background, graphics::DrawParam::default());
+
         self.board.draw(&mut canvas);
         
         for (key, value) in self.text_map.iter() {
             if self.gameover && *key == "1_Turn" { continue; }
             canvas.draw(&value.text, value.pos);
         }
+
+        for (_key, button) in self.buttons.iter_mut() {
+            button.draw(&mut canvas);
+        } 
 
         canvas.finish(ctx)?;
 
@@ -341,7 +437,7 @@ impl event::EventHandler<ggez::GameError> for MainState {
         if !self.gameover {
             for i in 0..GRID_SIZE.0 * GRID_SIZE.1 {
                 if self.board.rect[i].contains(Point2 { x, y } ) 
-                    && ctx.mouse.button_just_pressed(button) 
+                    && button == MouseButton::Left 
                     && self.board.sign[i] == Sign::None
                 {
                     self.board.sign[i] = match &self.player {
@@ -353,6 +449,17 @@ impl event::EventHandler<ggez::GameError> for MainState {
                 }
             }
         }
+
+        for (key, button) in self.buttons.clone() {
+            if button.rect.contains( Point2 { x, y } ) {
+                match key {
+                    "0_restart" => self.restart(),
+                    "1_quit" => ctx.request_quit(),
+                    _ => (),
+                };
+            };
+        }
+
         Ok(())
     }
 
