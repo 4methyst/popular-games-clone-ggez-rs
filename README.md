@@ -18,7 +18,7 @@ For now there's only ggez library but i will add more eventually.
 
 here are/is the list of games in this project:
 
-* `Tic tac toe`
+* [Tic tac toe](https://github.com/4methyst/popular-games-clone-ggez-rs/releases/tag/tic-tac-toe)
 
 For now there's only one game presented but i will add more for sure!
 
