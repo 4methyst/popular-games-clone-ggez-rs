@@ -325,6 +325,12 @@ impl MainState {
                 self.gameover();
             },
         }
+
+        if !self.gameover && self.check_draw() {
+            self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
+                    = String::from("DRAW");
+            self.gameover();
+        }
     }
 
     fn winner(&mut self) -> Player {
@@ -374,6 +380,15 @@ impl MainState {
         winner
     }
 
+    fn check_draw(&self) -> bool {
+        for i in self.board.sign.iter() {
+            if *i == Sign::None {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     fn gameover(&mut self) {
         self.gameover = true;
         for i in 0..GRID_SIZE.0 * GRID_SIZE.1 {
