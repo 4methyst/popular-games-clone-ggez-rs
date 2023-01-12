@@ -333,7 +333,7 @@ impl MainState {
         }
     }
 
-    fn winner(&mut self) -> Player {
+    fn winner(&self) -> Player {
         let mut winner = Player::None;
         let players = [Player::P1, Player::P2];
         let signs = [Sign::X, Sign::O];
@@ -388,7 +388,7 @@ impl MainState {
         }
         return true;
     }
-    
+
     fn gameover(&mut self) {
         self.gameover = true;
         for i in 0..GRID_SIZE.0 * GRID_SIZE.1 {
@@ -455,12 +455,13 @@ impl event::EventHandler<ggez::GameError> for MainState {
                     && button == MouseButton::Left 
                     && self.board.sign[i] == Sign::None
                 {
-                    self.board.sign[i] = match &self.player {
+                    self.board.sign[i] = match self.player {
                         Player::P1 => Sign::X,
                         Player::P2 => Sign::O,
                         Player::None => Sign::None,
                     };
                     self.state_update();
+                    break;
                 }
             }
         }
