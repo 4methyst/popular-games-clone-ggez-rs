@@ -22,7 +22,7 @@ here are/is the list of games in this project:
 
 For now there's only one game presented but i will add more for sure!
 
-You can try the game by compiling the source code or you can just download from the [release](https://github.com/MohammadAlimul/popular-games-clone-ggez-rs/releases) tab. 
+You can try the game by compiling the source code or you can just download from the [release](https://github.com/MohammadAlimul/popular-games-clone-ggez-rs/releases) tab. Note that in the release tab there's only windows executable files, if you are using other operating system please compile it by yourself or you could direcly ask me on [discord](https://github.com/4methyst/popular-games-clone-ggez-rs#notes).
 
 ### Code
 
