@@ -6,6 +6,10 @@
 
 This is project to make simple popular game clones and write it in rust(I am sorry if you missunderstood or have different understanding of the word "popular"). I made this repo to learn rust while also learn how to make games. If you want to take a look at my code go on. I will try my best to write good codes while also trying my best to not copy others code(I know it's impossible).
 
+### Purpose
+
+My main purpose of doing this project is I want to learn rust. If you find this not beginner friendly I am sorry because that's not my purpose. Also sorry in advance if my code is not optimized or good enough for you, feel free to open [issue](https://github.com/MohammadAlimul/popular-games-clone-ggez-rs/issues) or contact me on [discord](https://github.com/4methyst/popular-games-clone-ggez-rs#notes) if you want to discuss something.
+
 ### Dependencies
 
 Here are/is the list of dependencies this project uses:
