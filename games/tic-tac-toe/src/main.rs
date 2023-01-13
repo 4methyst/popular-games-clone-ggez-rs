@@ -1,4 +1,4 @@
-// #![windows_subsysqtem = "windows"]
+// #![windows_subsystem = "windows"]
 
 mod game;
 use game::core::{ MainState, SCREEN_SIZE };
