@@ -1,3 +1,5 @@
+// #![windows_subsystem = "windows"]
+
 use std::collections::BTreeMap;
 
 use ggez::{
@@ -492,11 +494,11 @@ impl event::EventHandler<ggez::GameError> for MainState {
 fn main() -> GameResult {
     let (ctx, events_loop) = 
         ggez::ContextBuilder::new(
-            "PlayGround", 
+            "Tic tac toe", 
             "4methyst")
         .window_setup(
             ggez::conf::WindowSetup::default()
-            .title("PlayGround"))
+            .title("Tic tac toe"))
         .window_mode(
             ggez::conf::WindowMode::default()
             .dimensions(SCREEN_SIZE.0, SCREEN_SIZE.1))
