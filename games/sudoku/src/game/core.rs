@@ -1,5 +1,6 @@
 use ggez::{
-    event, Context, GameError
+    event, Context, GameResult,
+    graphics::{ self }
 };
 
 use crate::game::entity::*;
@@ -36,11 +37,13 @@ impl App {
 }
 
 impl event::EventHandler for App {
-    fn update(&mut self, _ctx: &mut Context) -> Result<(), GameError> {
+    fn update(&mut self, _ctx: &mut Context) -> GameResult {
         Ok(())
     }
 
-    fn draw(&mut self, _ctx: &mut Context) -> Result<(), GameError> {
+    fn draw(&mut self, ctx: &mut Context) -> GameResult {
+        let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
+        self.board.draw(&mut canvas)?;
         Ok(())
     }
 }
