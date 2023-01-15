@@ -10,7 +10,7 @@ This is project to make simple popular game clones and write it in rust(I am sor
 
 My main purpose of doing this project is I want to learn rust. If you find this not beginner friendly I am sorry because that's not my purpose. Also sorry in advance if my code is not optimized or good enough for you, feel free to open [issue](https://github.com/alimulap/popular-games-clone-ggez-rs/issues) or contact me on [discord](https://github.com/4methyst/popular-games-clone-ggez-rs#notes) if you want to discuss something.
 
-## IMPORTANT!!
+## DISCLAIMER!
 
 This project is for personal and educational only. I do not have purpose to monetize or commercialized this project.
 
