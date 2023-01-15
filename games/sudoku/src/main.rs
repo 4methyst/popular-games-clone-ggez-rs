@@ -1,6 +1,8 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod game;
-use game::core as game_core;
+use game::core as Game;
 
 fn main() {
-    game_core::run();
+    Game::run();
 }

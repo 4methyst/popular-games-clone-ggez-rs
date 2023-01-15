@@ -88,13 +88,13 @@ impl Board {
         }
     }
 
-    pub fn draw (&mut self, canvas: &mut graphics::Canvas) -> GameResult{
+    pub fn draw (&mut self, canvas: &mut graphics::Canvas) -> GameResult {
         for i in 0..9 {
             canvas.draw(
                 &self.region_mesh, 
                 Vec2::new(
-                    (GRID_DIMENSION.0 * 3.) * (i%3) as f32,
-                    (GRID_DIMENSION.1 * 3.) * (i/3) as f32,
+                    (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
+                    (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
                 )
             );
             for j in 0..9 {

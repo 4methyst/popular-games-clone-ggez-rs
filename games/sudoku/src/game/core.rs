@@ -3,7 +3,10 @@ use ggez::{
     graphics::{ self }
 };
 
-use crate::game::entity::*;
+// use crate::game::entity::*;
+use crate::game::game_states::{
+    GameState, StateTrait, main_menu::MainMenu
+};
 
 const SCREEN_SIZE: (f32, f32) = (720., 480.);
 
@@ -25,13 +28,15 @@ pub fn run() {
 }
 
 struct App {
-    board: Board,
+    states: Vec<Box<dyn StateTrait>>,
 }
 
 impl App {
     fn new(ctx: &Context) -> Self {
         App {
-            board: Board::init(&ctx),
+            states: vec![
+                Box::new(MainMenu::new(&ctx)),
+            ],
         }
     }
 }
@@ -43,7 +48,7 @@ impl event::EventHandler for App {
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
-        self.board.draw(&mut canvas)?;
+        canvas.finish(ctx)?;
         Ok(())
     }
 }
