@@ -10,7 +10,7 @@ pub struct Button {
 }
 
 impl Button {
-    fn new(ctx: &Context, rect: Rect, text: Text) -> Self {
+    pub fn new(ctx: &Context, rect: Rect, text: Text) -> Self {
         let mesh = Mesh::new_rectangle(
             ctx, 
             graphics::DrawMode::Stroke(
