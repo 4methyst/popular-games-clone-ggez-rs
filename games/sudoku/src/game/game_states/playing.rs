@@ -4,18 +4,18 @@ use ggez::{
 };
 
 use crate::game::{
-    entity::Board,
+    entity::GameBoard,
     game_states::*,
 };
 
 pub struct Playing {
-    board: Board,
+    board: GameBoard,
 }
 
 impl Playing {
     pub fn new(ctx: &Context) -> Self {
         Playing {
-            board: Board::init(&ctx),
+            board: GameBoard::init(&ctx),
         }
     }
 }
