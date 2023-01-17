@@ -1,12 +1,15 @@
 use ggez::{
     event, Context, GameResult,
+    mint::Point2,
     graphics::{ self }
 };
 
 // use crate::game::entity::*;
 use crate::game::{
-        game_states::{
-        GameState, StateTrait, main_menu::MainMenu
+    game_states::{
+        *, 
+        main_menu::MainMenu,
+        playing::Playing,
     },
     constants::*,
 };
@@ -29,37 +32,47 @@ pub fn run() {
 }
 
 struct App {
-    states: Vec<Box<dyn StateTrait>>,
-    current_state: GameState,
+    current_state: Box<dyn StateTrait>,
 }
 
 impl App {
     fn new(ctx: &Context, initial_state: GameState) -> Self {
+        let current_state: Box<dyn StateTrait> = match initial_state {
+            GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
+            GameState::Playing => Box::new(Playing::new(&ctx)),
+        };
         App {
-            states: vec![
-                Box::new(MainMenu::new(&ctx)),
-            ],
-            current_state: initial_state,
+            current_state,
         }
     }
 
-    fn get_current_state(&mut self) -> &mut Box<dyn StateTrait> {
-        match self.current_state {
-            GameState::MainMenu => &mut self.states[GameState::MainMenu as usize],
-        }
+    fn change_state(&mut self, ctx: &Context, new_state: GameState) {
+        let new_state: Box<dyn StateTrait> = match new_state {
+            GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
+            GameState::Playing => Box::new(Playing::new(&ctx)),
+        };
+        let old_state = std::mem::replace(&mut self.current_state, new_state);
+        std::mem::drop(old_state);
     }
 }
 
 impl event::EventHandler for App {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        self.get_current_state().update(&ctx)?;
+        if let Some(new_state) = self.current_state.update(&ctx)? {
+            self.change_state(&ctx, new_state);
+        }
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
-        self.get_current_state().draw(ctx, &mut canvas)?;
+        self.current_state.draw(ctx, &mut canvas)?;
         canvas.finish(ctx)?;
+        Ok(())
+    }
+
+    fn mouse_button_down_event(&mut self, ctx: &mut Context, button: event::MouseButton, x: f32, y: f32) -> GameResult {
+        self.current_state.mouse_button_down_event(ctx, &button, &Point2 { x, y })?;
         Ok(())
     }
 }

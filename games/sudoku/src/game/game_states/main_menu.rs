@@ -9,8 +9,8 @@ use ggez::{
 use crate::game::{
     ui::*,
     constants::*,
+    game_states::*,
 };
-use super::StateTrait;
 
 pub struct MainMenu {
     texts: BTreeMap<&'static str, Text>,
@@ -91,8 +91,8 @@ impl MainMenu {
 }
 
 impl StateTrait for MainMenu {
-    fn update(&mut self, _ctx: &Context) -> GameResult {
-        Ok(())
+    fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
+        Ok(None)
     }
 
     fn draw(&mut self, _ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
@@ -109,9 +109,21 @@ impl StateTrait for MainMenu {
                 "1_Author" => canvas.draw(text, Vec2::new(640., 450.)),
                 _ => (),
             }
-            // canvas.draw(text, graphics::DrawParam::default());
         }
 
+        Ok(())
+    }
+
+    fn mouse_button_down_event(&mut self, ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
+        for (key, buttonui) in self.buttons.iter_mut() {
+            if buttonui.rect.contains(*point) && *button == MouseButton::Left {
+                match *key {
+                    "0_Play" => (),
+                    "1_Exit" => ctx.request_quit(),
+                    _ => (),
+                }
+            }
+        }
         Ok(())
     }
 }
