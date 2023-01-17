@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use ggez::{
+    glam::Vec2,
     GameResult, Context,
     graphics::{ self, Text, Rect, Color },
 };
@@ -25,7 +26,7 @@ impl MainMenu {
             Text::new(
                 graphics::TextFragment::new("SUDOKU")
                 .color(Color::WHITE)
-                .scale(50.)
+                .scale(80.)
             )
             .set_layout(graphics::TextLayout::center())
             .to_owned()
@@ -35,7 +36,7 @@ impl MainMenu {
             Text::new(
                 graphics::TextFragment::new("Made by alimulap")
                 .color(Color::WHITE)
-                .scale(20.)
+                .scale(15.)
             )
             .set_layout(graphics::TextLayout::center())
             .to_owned()
@@ -95,8 +96,6 @@ impl StateTrait for MainMenu {
     }
 
     fn draw(&mut self, _ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
-        // self.buttons.get_mut("0_Play").unwrap().draw(canvas);
-        // self.buttons.get_mut("1_Exit").unwrap().draw(canvas);
 
         canvas.draw(&self.background, graphics::DrawParam::default());
 
@@ -104,8 +103,13 @@ impl StateTrait for MainMenu {
             button.draw(canvas);
         }
 
-        for (_key, text) in self.texts.iter() {
-            canvas.draw(text, graphics::DrawParam::default());
+        for (key, text) in self.texts.iter() {
+            match *key {
+                "0_Title" => canvas.draw(text, Vec2::new(360., 100.)),
+                "1_Author" => canvas.draw(text, Vec2::new(640., 450.)),
+                _ => (),
+            }
+            // canvas.draw(text, graphics::DrawParam::default());
         }
 
         Ok(())
