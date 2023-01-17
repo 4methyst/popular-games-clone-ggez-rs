@@ -3,6 +3,7 @@ use ggez::{event::MouseButton, GameResult, Context, graphics::Canvas, mint::Poin
 pub mod main_menu;
 pub mod playing;
 
+#[derive(Clone)]
 pub enum GameState {
     MainMenu,
     Playing,

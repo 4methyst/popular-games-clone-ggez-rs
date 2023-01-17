@@ -1,6 +1,6 @@
 use ggez::{
     Context, GameResult,
-    graphics::{ self, Rect },
+    graphics,
 };
 
 use crate::game::{
@@ -21,11 +21,12 @@ impl Playing {
 }
 
 impl StateTrait for Playing {
-    fn update(&mut self, ctx: &Context) -> GameResult<Option<GameState>> {
+    fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
         Ok(None)
     }
 
-    fn draw(&mut self, ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
+    fn draw(&mut self, _ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
+        self.board.draw(canvas)?;
         Ok(())
     }
 

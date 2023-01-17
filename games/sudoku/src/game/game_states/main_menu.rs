@@ -16,6 +16,7 @@ pub struct MainMenu {
     texts: BTreeMap<&'static str, Text>,
     buttons: BTreeMap<&'static str, Button>,
     background: graphics::Mesh,
+    change_state: Option<GameState>,
 }
 
 impl MainMenu {
@@ -86,12 +87,17 @@ impl MainMenu {
             texts,
             buttons,
             background,
+            change_state: None,
         }
     }
 }
 
 impl StateTrait for MainMenu {
     fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
+        if let Some(new_state) = self.change_state.clone() {
+            self.change_state = None;
+            return Ok(Some(new_state));
+        }
         Ok(None)
     }
 
@@ -118,7 +124,7 @@ impl StateTrait for MainMenu {
         for (key, buttonui) in self.buttons.iter_mut() {
             if buttonui.rect.contains(*point) && *button == MouseButton::Left {
                 match *key {
-                    "0_Play" => (),
+                    "0_Play" => self.change_state = Some(GameState::Playing),
                     "1_Exit" => ctx.request_quit(),
                     _ => (),
                 }

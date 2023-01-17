@@ -69,7 +69,7 @@ impl Board {
         )
         .set_layout(graphics::TextLayout::center()).to_owned();
 
-        for i in 0..10 {
+        for i in 1..9 {
             let number = i.to_string();
             number_draw[i] = Text::new(
                 graphics::TextFragment::new(number)
@@ -93,8 +93,8 @@ impl Board {
             canvas.draw(
                 &self.region_mesh, 
                 Vec2::new(
-                    (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
-                    (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
+                    225. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
+                    105. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
                 )
             );
             for j in 0..9 {
