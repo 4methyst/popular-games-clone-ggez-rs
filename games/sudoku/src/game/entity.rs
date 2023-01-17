@@ -20,8 +20,8 @@ impl GameBoard {
         for i in 0..9 {
             for j in 0..9 {
                 grid_rect[i][j] = Rect::new(
-                    210. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.) + (j%3) as f32 * GRID_DIMENSION.0,
-                    90. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.) + (j/3) as f32 * GRID_DIMENSION.1,
+                    180. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.) + (j%3) as f32 * GRID_DIMENSION.0,
+                    60. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.) + (j/3) as f32 * GRID_DIMENSION.1,
                     GRID_DIMENSION.0,
                     GRID_DIMENSION.1
                 );
@@ -31,7 +31,7 @@ impl GameBoard {
             ctx, 
             graphics::DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
-                .with_line_width(1.5)
+                .with_line_width(1.)
                 .with_line_join(graphics::LineJoin::Bevel)
              ), 
             Rect {
@@ -93,8 +93,8 @@ impl GameBoard {
             canvas.draw(
                 &self.region_mesh, 
                 Vec2::new(
-                    210. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
-                    90. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
+                    180. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
+                    60. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
                 )
             );
             for j in 0..9 {
@@ -126,9 +126,9 @@ impl NumberBoard {
     pub fn init(ctx: &Context) -> Self {
         let mut rect = [Rect::default(); 10];
         for i in 0..10 {
-            rect[1] = Rect::new(
-                90. + (i%2) as f32 * GRID_DIMENSION.0, 
-                90. + (i/2) as f32 * GRID_DIMENSION.1, 
+            rect[i] = Rect::new(
+                60. + (i%2) as f32 * GRID_DIMENSION.0, 
+                60. + (i/2) as f32 * GRID_DIMENSION.1, 
                 GRID_DIMENSION.0, 
                 GRID_DIMENSION.1,
             );
@@ -138,7 +138,7 @@ impl NumberBoard {
             ctx, 
             graphics::DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
-                .with_line_width(1.5)
+                .with_line_width(1.)
                 .with_line_join(graphics::LineJoin::Bevel)
              ), 
             Rect::new(
@@ -151,7 +151,13 @@ impl NumberBoard {
         ).unwrap();
 
         let mut numbers: [Text; 10] = Default::default();
-        for i in 0..10 {
+        numbers[0] = Text::new(
+            graphics::TextFragment::new("X")
+            .color(graphics::Color::WHITE)
+            .scale(17.)
+        )
+        .set_layout(graphics::TextLayout::center()).to_owned();
+        for i in 1..10 {
             let number = i.to_string();
             numbers[i] = Text::new(
                 graphics::TextFragment::new(number)
