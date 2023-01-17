@@ -4,18 +4,20 @@ use ggez::{
 };
 
 use crate::game::{
-    entity::GameBoard,
+    entity::*,
     game_states::*,
 };
 
 pub struct Playing {
-    board: GameBoard,
+    game_board: GameBoard,
+    number_board: NumberBoard,
 }
 
 impl Playing {
     pub fn new(ctx: &Context) -> Self {
         Playing {
-            board: GameBoard::init(&ctx),
+            game_board: GameBoard::init(&ctx),
+            number_board: NumberBoard::init(&ctx),
         }
     }
 }
@@ -26,7 +28,8 @@ impl StateTrait for Playing {
     }
 
     fn draw(&mut self, _ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
-        self.board.draw(canvas)?;
+        self.game_board.draw(canvas)?;
+        self.number_board.draw(canvas)?;
         Ok(())
     }
 

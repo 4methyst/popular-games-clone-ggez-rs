@@ -72,7 +72,6 @@ impl event::EventHandler for App {
     }
 
     fn mouse_button_down_event(&mut self, ctx: &mut Context, button: event::MouseButton, x: f32, y: f32) -> GameResult {
-        println!("Ikan");
         self.current_state.mouse_button_down_event(ctx, &button, &Point2 { x, y })?;
         Ok(())
     }

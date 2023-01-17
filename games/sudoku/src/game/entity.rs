@@ -106,8 +106,8 @@ impl GameBoard {
                 canvas.draw(
                     &self.number_draw[self.numbers[i][j]],
                     Vec2::new(
-                        (i%3) as f32 * (GRID_DIMENSION.0 * 3.) + ((j%3) as f32 + 0.5) * GRID_DIMENSION.0,
-                        (i/3) as f32 * (GRID_DIMENSION.1 * 3.) + ((j/3) as f32 + 0.5) * GRID_DIMENSION.1,
+                        self.grid_rect[i][j].x + GRID_DIMENSION.0 / 2.,
+                        self.grid_rect[i][j].y + GRID_DIMENSION.1 / 2.,
                     )
                 );
             }
@@ -162,5 +162,20 @@ impl NumberBoard {
         }
 
         NumberBoard { rect, mesh, numbers }
+    }
+
+    pub fn draw(&mut self, canvas: &mut graphics::Canvas) -> GameResult {
+        for i in 0..self.rect.len() {
+            canvas.draw(&self.mesh, Vec2::new(self.rect[i].x, self.rect[i].y));
+
+            canvas.draw(
+                &self.numbers[i],
+                Vec2::new(
+                    self.rect[i].x + GRID_DIMENSION.0 / 2.,
+                    self.rect[i].y + GRID_DIMENSION.1 / 2.,
+                ),
+            ); 
+        }
+        Ok(())
     }
 }
