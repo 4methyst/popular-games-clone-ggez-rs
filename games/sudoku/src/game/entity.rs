@@ -1,21 +1,38 @@
 use ggez::{
-    glam::Vec2,
+    glam::Vec2, mint::Point2,
     Context, GameResult, 
     graphics::{ self, Mesh, Rect, Text }
 };
 
 const GRID_DIMENSION: (f32, f32) = (40., 40.);
 
+#[derive(Clone, Copy)]
+pub enum Condition {
+    PreDetermined,
+    Neutral,
+    Wrong,
+}
+
+pub enum Difficulty {
+    None,
+    Easy,
+    Intermediate,
+    Hard,
+}
+
 pub struct GameBoard {
-    grid_rect: [[Rect; 9]; 9],
-    grid_mesh: Mesh,
+    pub grid_rect: [[Rect; 9]; 9],
+    pub numbers: [[usize; 9]; 9],
+    pub number_state: [[Condition; 9]; 9],
+    grid_mesh_predetermined: Mesh,
+    grid_mesh_neutral: Mesh,
+    grid_mesh_wrong: Mesh,
     region_mesh: Mesh,
-    numbers: [[usize; 9]; 9],
     number_draw: [Text; 10],
 }
 
 impl GameBoard {
-    pub fn init(ctx: &Context) -> GameBoard {
+    pub fn init(ctx: &Context, difficulty: &Difficulty) -> GameBoard {
         let mut grid_rect = [[Rect::default(); 9]; 9];
         for i in 0..9 {
             for j in 0..9 {
@@ -27,7 +44,22 @@ impl GameBoard {
                 );
             }
         }
-        let grid_mesh = Mesh::new_rectangle(
+        let grid_mesh_predetermined = Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke( 
+                graphics::StrokeOptions::default()
+                .with_line_width(1.)
+                .with_line_join(graphics::LineJoin::Bevel)
+             ), 
+            Rect {
+                x: 0.,
+                y: 0.,
+                w: GRID_DIMENSION.0,
+                h: GRID_DIMENSION.1,
+            }, 
+            graphics::Color::GREEN,
+        ).unwrap();
+        let grid_mesh_neutral = Mesh::new_rectangle(
             ctx, 
             graphics::DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
@@ -41,6 +73,21 @@ impl GameBoard {
                 h: GRID_DIMENSION.1,
             }, 
             graphics::Color::WHITE,
+        ).unwrap();
+        let grid_mesh_wrong = Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke( 
+                graphics::StrokeOptions::default()
+                .with_line_width(1.)
+                .with_line_join(graphics::LineJoin::Bevel)
+             ), 
+            Rect {
+                x: 0.,
+                y: 0.,
+                w: GRID_DIMENSION.0,
+                h: GRID_DIMENSION.1,
+            }, 
+            graphics::Color::RED,
         ).unwrap();
         let region_mesh = Mesh::new_rectangle(
             ctx, 
@@ -58,7 +105,10 @@ impl GameBoard {
             graphics::Color::WHITE,
         ).unwrap();
 
-        let numbers = [[0usize; 9]; 9];
+        // let numbers = [[0usize; 9]; 9];
+        // let number_state = [[Condition::Neutral; 9]; 9];
+
+        let (numbers, number_state) = GameBoard::define_numbers(difficulty);
 
         let mut number_draw: [Text; 10] = Default::default();
 
@@ -81,9 +131,12 @@ impl GameBoard {
 
         GameBoard {
             grid_rect,
-            grid_mesh,
+            grid_mesh_predetermined,
+            grid_mesh_neutral,
+            grid_mesh_wrong,
             region_mesh,
             numbers,
+            number_state,
             number_draw
         }
     }
@@ -92,34 +145,72 @@ impl GameBoard {
         for i in 0..9 {
             canvas.draw(
                 &self.region_mesh, 
-                Vec2::new(
+                graphics::DrawParam::default()
+                    .dest(Vec2::new(
                     180. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
                     60. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
-                )
+                ))
+                .z(4)
             );
             for j in 0..9 {
+                let (grid_mesh, index, color) = match self.number_state[i][j] {
+                    Condition::PreDetermined => (&self.grid_mesh_predetermined, 2, graphics::Color::GREEN),
+                    Condition::Neutral => (&self.grid_mesh_neutral, 1, graphics::Color::WHITE),
+                    Condition::Wrong => (&self.grid_mesh_wrong, 3, graphics::Color::RED),
+                };
                 canvas.draw(
-                    &self.grid_mesh,
-                    Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y),
+                    grid_mesh,
+                    graphics::DrawParam::default()
+                    .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
+                    .z(index)
                 );
 
                 canvas.draw(
                     &self.number_draw[self.numbers[i][j]],
-                    Vec2::new(
+                    graphics::DrawParam::default()
+                    .dest(Vec2::new(
                         self.grid_rect[i][j].x + GRID_DIMENSION.0 / 2.,
                         self.grid_rect[i][j].y + GRID_DIMENSION.1 / 2.,
-                    )
+                    ))
+                    .color(color)
                 );
             }
         }
         Ok(())
     }
+
+    fn define_numbers(difficulty: &Difficulty) -> ([[usize; 9]; 9],[[Condition; 9]; 9]) {
+        let mut numbers = [[0usize; 9]; 9];
+        let mut conditions = [[Condition::Neutral; 9]; 9];
+        let number_determine: i32 = match difficulty {
+            Difficulty::None => 0,
+            Difficulty::Easy => 18,
+            Difficulty::Intermediate => 11,
+            Difficulty::Hard => 7,
+        };
+        let chance = 0..number_determine;
+        let mut number_determined = 0;
+
+        for i in 0..std::u32::MAX {
+            let i: usize = (i % (9 * 9)) as usize;
+            if number_determined >= number_determine { break; }
+            let rand: usize = rand::random();
+
+            if chance.contains(&((rand % (9*9)) as i32)) {
+                numbers[i/9][i%9] = 1+rand%9;
+                conditions[i/9][i%9] = Condition::PreDetermined;
+                number_determined += 1;
+            }
+        }
+
+        (numbers, conditions)
+    }
 }
 
 pub struct NumberBoard {
-    rect: [Rect; 10],
-    mesh: Mesh,
-    numbers: [Text; 10],
+    pub rect: [Rect; 10],
+    pub mesh: Mesh,
+    pub numbers: [Text; 10],
 }
 
 impl NumberBoard {

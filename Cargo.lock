@@ -2287,6 +2287,7 @@ name = "sudoku"
 version = "0.1.0"
 dependencies = [
  "ggez",
+ "rand",
 ]
 
 [[package]]

@@ -13,6 +13,7 @@ pub struct Playing {
     game_board: GameBoard,
     number_board: NumberBoard,
     background: graphics::Mesh,
+    number_selection: usize,
 }
 
 impl Playing {
@@ -30,9 +31,10 @@ impl Playing {
             indices: &indices,
         });
         Playing {
-            game_board: GameBoard::init(&ctx),
+            game_board: GameBoard::init(&ctx, &Difficulty::Easy),
             number_board: NumberBoard::init(&ctx),
             background,
+            number_selection: 0,
         }
     }
 }
@@ -49,7 +51,22 @@ impl StateTrait for Playing {
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, _ctx: &mut Context, _button: &MouseButton, _point: &Point2<f32>) -> GameResult {
+    fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
+        if *button == MouseButton::Left {
+            for i in 0..10 {
+                if self.number_board.rect[i].contains(*point) {
+                    self.number_selection = i;
+                }
+            }
+
+            for i in 0..9 {
+                for j in 0..9 {
+                    if self.game_board.grid_rect[i][j].contains(*point) {
+                        self.game_board.numbers[i][j] = self.number_selection;
+                    }
+                }
+            }
+        }
         Ok(())
     }
 }
