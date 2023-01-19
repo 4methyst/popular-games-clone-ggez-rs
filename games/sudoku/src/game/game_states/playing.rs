@@ -92,6 +92,18 @@ impl StateTrait for Playing {
                 }
             }
         }
+        if *button == MouseButton::Right {
+            for i in 0..9 {
+                for j in 0..9 {
+                    if self.game_board.grid_rect[i][j].contains(*point) 
+                        && self.game_board.number_state[i][j] != Condition::PreDetermined
+                    {
+                        self.game_board.numbers[i][j] = 0;
+                        self.update_state();
+                    }
+                }
+            }
+        }
         Ok(())
     }
 }
