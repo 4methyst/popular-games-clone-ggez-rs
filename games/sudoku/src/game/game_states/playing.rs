@@ -37,6 +37,25 @@ impl Playing {
             number_selection: 0,
         }
     }
+
+    fn update_state(&mut self) {
+        for i in 0..9 {
+            for j in 0..9 {
+                if !GameBoard::check(self.game_board.numbers[i][j], i, j, &self.game_board.numbers).expect("Error") 
+                    && self.game_board.number_state[i][j] != Condition::PreDetermined
+                    && self.game_board.numbers[i][j] != 0
+                {
+                    self.game_board.number_state[i][j] = Condition::Wrong;
+                } 
+                else if self.game_board.number_state[i][j] == Condition::PreDetermined {
+                    self.game_board.number_state[i][j] = Condition::PreDetermined;
+                }
+                else {
+                    self.game_board.number_state[i][j] = Condition::Neutral;
+                }
+            }
+        }
+    }
 }
 
 impl StateTrait for Playing {
@@ -62,8 +81,13 @@ impl StateTrait for Playing {
             for i in 0..9 {
                 for j in 0..9 {
                     if self.game_board.grid_rect[i][j].contains(*point) 
-                        && self.game_board.number_state[i][j] != Condition::PreDetermined{
+                        && self.game_board.number_state[i][j] != Condition::PreDetermined
+                    {
+                        // if !GameBoard::check(self.number_selection, i, j, &self.game_board.numbers).expect("Error") {
+                        //     self.game_board.numbers[i][j] = self.number_selection;
+                        // }
                         self.game_board.numbers[i][j] = self.number_selection;
+                        self.update_state();
                     }
                 }
             }
