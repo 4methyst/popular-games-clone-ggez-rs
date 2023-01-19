@@ -7,6 +7,7 @@ use crate::game::{
     constants::*,
     entity::*,
     game_states::*,
+    context,
 };
 
 pub struct Playing {
@@ -17,7 +18,7 @@ pub struct Playing {
 }
 
 impl Playing {
-    pub fn new(ctx: &Context) -> Self {
+    pub fn new(ctx: &Context, addon_ctx: &context::AddOnContext) -> Self {
         let vertices = [
             graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
             graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
@@ -31,7 +32,7 @@ impl Playing {
             indices: &indices,
         });
         Playing {
-            game_board: GameBoard::init(&ctx, &Difficulty::Easy),
+            game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
             background,
             number_selection: 0,

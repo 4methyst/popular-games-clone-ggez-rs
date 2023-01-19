@@ -10,22 +10,23 @@ use crate::game::{
     ui::*,
     constants::*,
     game_states::*,
+    context,
 };
 
-pub struct MainMenu {
+pub struct SelectDifficulty {
     texts: BTreeMap<&'static str, Text>,
     buttons: BTreeMap<&'static str, Button>,
     background: graphics::Mesh,
     change_state: Option<GameState>,
 }
 
-impl MainMenu {
+impl SelectDifficulty {
     pub fn new(ctx: &Context) -> Self {
         let mut texts = BTreeMap::new();
         texts.insert(
             "0_Title", 
             Text::new(
-                graphics::TextFragment::new("SUDOKU")
+                graphics::TextFragment::new("Select Difficulty")
                 .color(Color::WHITE)
                 .scale(80.)
             )
@@ -44,12 +45,12 @@ impl MainMenu {
         );
         let mut buttons = BTreeMap::new();
         buttons.insert(
-            "0_Play",
+            "0_None",
             Button::new(
                 &ctx,
                 Rect::new(320., 200., 80., 30.),
                 Text::new(
-                    graphics::TextFragment::new("PLAY")
+                    graphics::TextFragment::new("None")
                     .color(Color::WHITE)
                     .scale(20.)
                 )
@@ -58,12 +59,40 @@ impl MainMenu {
             )
         );
         buttons.insert(
-            "1_Exit",
+            "1_Easy",
             Button::new(
                 &ctx,
-                Rect::new(320., 250., 80., 30.),
+                Rect::new(320., 240., 80., 30.),
                 Text::new(
-                    graphics::TextFragment::new("EXIT")
+                    graphics::TextFragment::new("Easy")
+                    .color(Color::WHITE)
+                    .scale(20.)
+                )
+                .set_layout(graphics::TextLayout::center())
+                .to_owned()
+            )
+        );
+        buttons.insert(
+            "2_Intermediate",
+            Button::new(
+                &ctx,
+                Rect::new(320., 280., 80., 30.),
+                Text::new(
+                    graphics::TextFragment::new("Intermediate")
+                    .color(Color::WHITE)
+                    .scale(20.)
+                )
+                .set_layout(graphics::TextLayout::center())
+                .to_owned()
+            )
+        );
+        buttons.insert(
+            "3_Hard",
+            Button::new(
+                &ctx,
+                Rect::new(320., 320., 80., 30.),
+                Text::new(
+                    graphics::TextFragment::new("Hard")
                     .color(Color::WHITE)
                     .scale(20.)
                 )
@@ -83,7 +112,7 @@ impl MainMenu {
             vertices: &vertices,
             indices: &indices,
         });
-        MainMenu {
+        SelectDifficulty {
             texts,
             buttons,
             background,
@@ -92,7 +121,7 @@ impl MainMenu {
     }
 }
 
-impl StateTrait for MainMenu {
+impl StateTrait for SelectDifficulty {
     fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
         if let Some(new_state) = self.change_state.clone() {
             self.change_state = None;
@@ -124,7 +153,7 @@ impl StateTrait for MainMenu {
         for (key, buttonui) in self.buttons.iter_mut() {
             if buttonui.rect.contains(*point) && *button == MouseButton::Left {
                 match *key {
-                    "0_Play" => self.change_state = Some(GameState::SelectDifficulty),
+                    "0_Play" | "" => self.change_state = Some(GameState::Playing),
                     "1_Exit" => ctx.request_quit(),
                     _ => (),
                 }

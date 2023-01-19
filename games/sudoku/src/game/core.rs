@@ -1,7 +1,7 @@
 use ggez::{
     event, Context, GameResult,
     mint::Point2,
-    graphics::{ self }
+    graphics,
 };
 
 // use crate::game::entity::*;
@@ -10,8 +10,10 @@ use crate::game::{
         *, 
         main_menu::MainMenu,
         playing::Playing,
+        select_difficulty::SelectDifficulty,
     },
     constants::*,
+    context,
 };
 
 pub fn run() {
@@ -33,23 +35,27 @@ pub fn run() {
 
 struct App {
     current_state: Box<dyn StateTrait>,
+    addon_ctx: context::AddOnContext,
 }
 
 impl App {
     fn new(ctx: &Context, initial_state: GameState) -> Self {
         let current_state: Box<dyn StateTrait> = match initial_state {
             GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
-            GameState::Playing => Box::new(Playing::new(&ctx)),
+            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
+            GameState::Playing => Box::new(Playing::new(&ctx, &context::AddOnContext::new_forced())),
         };
         App {
             current_state,
+            addon_ctx: context::AddOnContext::new(),
         }
     }
 
     fn change_state(&mut self, ctx: &Context, new_state: GameState) {
         let new_state: Box<dyn StateTrait> = match new_state {
             GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
-            GameState::Playing => Box::new(Playing::new(&ctx)),
+            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
+            GameState::Playing => Box::new(Playing::new(&ctx, &self.addon_ctx)),
         };
         let old_state = std::mem::replace(&mut self.current_state, new_state);
         std::mem::drop(old_state);
