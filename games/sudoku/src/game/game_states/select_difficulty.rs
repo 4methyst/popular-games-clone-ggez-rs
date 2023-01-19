@@ -29,7 +29,7 @@ impl SelectDifficulty {
             Text::new(
                 graphics::TextFragment::new("Select Difficulty")
                 .color(Color::WHITE)
-                .scale(80.)
+                .scale(40.)
             )
             .set_layout(graphics::TextLayout::center())
             .to_owned()
@@ -49,7 +49,7 @@ impl SelectDifficulty {
             "0_None",
             Button::new(
                 &ctx,
-                Rect::new(320., 200., 80., 30.),
+                Rect::new(290., 200., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("None")
                     .color(Color::WHITE)
@@ -63,7 +63,7 @@ impl SelectDifficulty {
             "1_Easy",
             Button::new(
                 &ctx,
-                Rect::new(320., 240., 80., 30.),
+                Rect::new(290., 240., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Easy")
                     .color(Color::WHITE)
@@ -77,7 +77,7 @@ impl SelectDifficulty {
             "2_Intermediate",
             Button::new(
                 &ctx,
-                Rect::new(320., 280., 80., 30.),
+                Rect::new(290., 280., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Intermediate")
                     .color(Color::WHITE)
@@ -91,7 +91,7 @@ impl SelectDifficulty {
             "3_Hard",
             Button::new(
                 &ctx,
-                Rect::new(320., 320., 80., 30.),
+                Rect::new(290., 320., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Hard")
                     .color(Color::WHITE)
