@@ -75,6 +75,7 @@ impl StateTrait for Playing {
             for i in 0..10 {
                 if self.number_board.rect[i].contains(*point) {
                     self.number_selection = i;
+                    self.number_board.number_selection = self.number_selection;
                 }
             }
 
@@ -83,9 +84,6 @@ impl StateTrait for Playing {
                     if self.game_board.grid_rect[i][j].contains(*point) 
                         && self.game_board.number_state[i][j] != Condition::PreDetermined
                     {
-                        // if !GameBoard::check(self.number_selection, i, j, &self.game_board.numbers).expect("Error") {
-                        //     self.game_board.numbers[i][j] = self.number_selection;
-                        // }
                         self.game_board.numbers[i][j] = self.number_selection;
                         self.update_state();
                     }

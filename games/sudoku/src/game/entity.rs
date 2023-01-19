@@ -236,8 +236,10 @@ impl GameBoard {
 
 pub struct NumberBoard {
     pub rect: [Rect; 10],
-    pub mesh: Mesh,
-    pub numbers: [Text; 10],
+    mesh: Mesh,
+    mesh_selection: Mesh,
+    numbers: [Text; 10],
+    pub number_selection: usize,
 }
 
 impl NumberBoard {
@@ -267,11 +269,25 @@ impl NumberBoard {
             ), 
             graphics::Color::WHITE,
         ).unwrap();
+        let mesh_selection = Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke( 
+                graphics::StrokeOptions::default()
+                .with_line_width(2.)
+                .with_line_join(graphics::LineJoin::Bevel)
+             ), 
+            Rect::new(
+                0.,
+                0.,
+                GRID_DIMENSION.0,
+                GRID_DIMENSION.1,
+            ), 
+            graphics::Color::CYAN,
+        ).unwrap();
 
         let mut numbers: [Text; 10] = Default::default();
         numbers[0] = Text::new(
             graphics::TextFragment::new("X")
-            .color(graphics::Color::WHITE)
             .scale(17.)
         )
         .set_layout(graphics::TextLayout::center()).to_owned();
@@ -279,26 +295,41 @@ impl NumberBoard {
             let number = i.to_string();
             numbers[i] = Text::new(
                 graphics::TextFragment::new(number)
-                .color(graphics::Color::WHITE)
                 .scale(17.)
             )
             .set_layout(graphics::TextLayout::center()).to_owned();
         }
 
-        NumberBoard { rect, mesh, numbers }
+        NumberBoard { rect, mesh, mesh_selection, numbers, number_selection: 0 }
     }
 
     pub fn draw(&mut self, canvas: &mut graphics::Canvas) -> GameResult {
         for i in 0..self.rect.len() {
-            canvas.draw(&self.mesh, Vec2::new(self.rect[i].x, self.rect[i].y));
-
-            canvas.draw(
-                &self.numbers[i],
-                Vec2::new(
-                    self.rect[i].x + GRID_DIMENSION.0 / 2.,
-                    self.rect[i].y + GRID_DIMENSION.1 / 2.,
-                ),
-            ); 
+            if i == self.number_selection {
+                canvas.draw(&self.mesh_selection, Vec2::new(self.rect[i].x, self.rect[i].y));    
+                canvas.draw(
+                    &self.numbers[i],
+                    graphics::DrawParam::default()
+                    .dest(Vec2::new(
+                        self.rect[i].x + GRID_DIMENSION.0 / 2.,
+                        self.rect[i].y + GRID_DIMENSION.1 / 2.,
+                    ))
+                    .color(graphics::Color::CYAN)
+                    .z(2)
+                ); 
+            } else {
+                canvas.draw(&self.mesh, Vec2::new(self.rect[i].x, self.rect[i].y));
+                canvas.draw(
+                    &self.numbers[i],
+                    graphics::DrawParam::default()
+                    .dest(Vec2::new(
+                        self.rect[i].x + GRID_DIMENSION.0 / 2.,
+                        self.rect[i].y + GRID_DIMENSION.1 / 2.,
+                    ))
+                    .color(graphics::Color::WHITE)
+                    .z(1)
+                ); 
+            }
         }
         Ok(())
     }
