@@ -13,6 +13,7 @@ pub enum Condition {
     Wrong,
 }
 
+#[derive(Clone, Copy)]
 pub enum Difficulty {
     None,
     Easy,

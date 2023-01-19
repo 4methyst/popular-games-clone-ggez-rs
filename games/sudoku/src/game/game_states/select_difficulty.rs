@@ -10,7 +10,7 @@ use crate::game::{
     ui::*,
     constants::*,
     game_states::*,
-    context,
+    entity::Difficulty,
 };
 
 pub struct SelectDifficulty {
@@ -18,6 +18,7 @@ pub struct SelectDifficulty {
     buttons: BTreeMap<&'static str, Button>,
     background: graphics::Mesh,
     change_state: Option<GameState>,
+    selected_difficulty: Option<Difficulty>,
 }
 
 impl SelectDifficulty {
@@ -117,14 +118,16 @@ impl SelectDifficulty {
             buttons,
             background,
             change_state: None,
+            selected_difficulty: None,
         }
     }
 }
 
 impl StateTrait for SelectDifficulty {
-    fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
+    fn update(&mut self, _ctx: &Context, addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
         if let Some(new_state) = self.change_state.clone() {
             self.change_state = None;
+            addon_ctx.difficulty = self.selected_difficulty;
             return Ok(Some(new_state));
         }
         Ok(None)
@@ -149,12 +152,27 @@ impl StateTrait for SelectDifficulty {
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
+    fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
         for (key, buttonui) in self.buttons.iter_mut() {
             if buttonui.rect.contains(*point) && *button == MouseButton::Left {
                 match *key {
-                    "0_Play" | "" => self.change_state = Some(GameState::Playing),
-                    "1_Exit" => ctx.request_quit(),
+                    "0_None" => {
+                        self.selected_difficulty = Some(Difficulty::None);
+                        self.change_state = Some(GameState::Playing);
+                    },
+                    "1_Easy" => {
+                        self.selected_difficulty = Some(Difficulty::Easy);
+                        self.change_state = Some(GameState::Playing);
+                    },
+                    "2_Intermediate" => {
+                        self.selected_difficulty = Some(Difficulty::Intermediate);
+                        self.change_state = Some(GameState::Playing);
+                    },
+                    "3_Hard" => {
+                        self.selected_difficulty = Some(Difficulty::Hard);
+                        self.change_state = Some(GameState::Playing);
+                    },
+                    // "1_Exit" => ctx.request_quit(),
                     _ => (),
                 }
             }

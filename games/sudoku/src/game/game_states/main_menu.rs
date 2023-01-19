@@ -93,7 +93,7 @@ impl MainMenu {
 }
 
 impl StateTrait for MainMenu {
-    fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
+    fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
         if let Some(new_state) = self.change_state.clone() {
             self.change_state = None;
             return Ok(Some(new_state));

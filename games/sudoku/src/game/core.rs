@@ -64,7 +64,7 @@ impl App {
 
 impl event::EventHandler for App {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        if let Some(new_state) = self.current_state.update(&ctx)? {
+        if let Some(new_state) = self.current_state.update(&ctx, &mut self.addon_ctx)? {
             self.change_state(&ctx, new_state);
         }
         Ok(())

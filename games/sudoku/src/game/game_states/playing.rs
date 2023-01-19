@@ -60,7 +60,7 @@ impl Playing {
 }
 
 impl StateTrait for Playing {
-    fn update(&mut self, _ctx: &Context) -> GameResult<Option<GameState>> {
+    fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
         Ok(None)
     }
 
