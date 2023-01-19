@@ -1,12 +1,12 @@
 use ggez::{
-    glam::Vec2, mint::Point2,
+    glam::Vec2,
     Context, GameResult, 
     graphics::{ self, Mesh, Rect, Text }
 };
 
 const GRID_DIMENSION: (f32, f32) = (40., 40.);
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Condition {
     PreDetermined,
     Neutral,
@@ -24,9 +24,7 @@ pub struct GameBoard {
     pub grid_rect: [[Rect; 9]; 9],
     pub numbers: [[usize; 9]; 9],
     pub number_state: [[Condition; 9]; 9],
-    grid_mesh_predetermined: Mesh,
-    grid_mesh_neutral: Mesh,
-    grid_mesh_wrong: Mesh,
+    grid_mesh: Mesh,
     region_mesh: Mesh,
     number_draw: [Text; 10],
 }
@@ -44,22 +42,7 @@ impl GameBoard {
                 );
             }
         }
-        let grid_mesh_predetermined = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
-                graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
-            Rect {
-                x: 0.,
-                y: 0.,
-                w: GRID_DIMENSION.0,
-                h: GRID_DIMENSION.1,
-            }, 
-            graphics::Color::GREEN,
-        ).unwrap();
-        let grid_mesh_neutral = Mesh::new_rectangle(
+        let grid_mesh = Mesh::new_rectangle(
             ctx, 
             graphics::DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
@@ -73,21 +56,6 @@ impl GameBoard {
                 h: GRID_DIMENSION.1,
             }, 
             graphics::Color::WHITE,
-        ).unwrap();
-        let grid_mesh_wrong = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
-                graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
-            Rect {
-                x: 0.,
-                y: 0.,
-                w: GRID_DIMENSION.0,
-                h: GRID_DIMENSION.1,
-            }, 
-            graphics::Color::RED,
         ).unwrap();
         let region_mesh = Mesh::new_rectangle(
             ctx, 
@@ -114,7 +82,7 @@ impl GameBoard {
 
         number_draw[0] = Text::new(
             graphics::TextFragment::new("")
-            .color(graphics::Color::WHITE)
+            // .color(graphics::Color::WHITE)
             .scale(0.)
         )
         .set_layout(graphics::TextLayout::center()).to_owned();
@@ -123,7 +91,7 @@ impl GameBoard {
             let number = i.to_string();
             number_draw[i] = Text::new(
                 graphics::TextFragment::new(number)
-                .color(graphics::Color::WHITE)
+                // .color(graphics::Color::WHITE)
                 .scale(17.)
             )
             .set_layout(graphics::TextLayout::center()).to_owned();
@@ -131,9 +99,7 @@ impl GameBoard {
 
         GameBoard {
             grid_rect,
-            grid_mesh_predetermined,
-            grid_mesh_neutral,
-            grid_mesh_wrong,
+            grid_mesh,
             region_mesh,
             numbers,
             number_state,
@@ -153,16 +119,16 @@ impl GameBoard {
                 .z(4)
             );
             for j in 0..9 {
-                let (grid_mesh, index, color) = match self.number_state[i][j] {
-                    Condition::PreDetermined => (&self.grid_mesh_predetermined, 2, graphics::Color::GREEN),
-                    Condition::Neutral => (&self.grid_mesh_neutral, 1, graphics::Color::WHITE),
-                    Condition::Wrong => (&self.grid_mesh_wrong, 3, graphics::Color::RED),
+                let (index, color) = match self.number_state[i][j] {
+                    Condition::PreDetermined => (2, graphics::Color::GREEN),
+                    Condition::Neutral => (1, graphics::Color::WHITE),
+                    Condition::Wrong => (3, graphics::Color::RED),
                 };
                 canvas.draw(
-                    grid_mesh,
+                    &self.grid_mesh,
                     graphics::DrawParam::default()
                     .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
-                    .z(index)
+                    .z(index).color(color)
                 );
 
                 canvas.draw(
