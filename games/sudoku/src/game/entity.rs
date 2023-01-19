@@ -163,6 +163,7 @@ impl GameBoard {
             let rand: usize = rand::random();
 
             if chance.contains(&((rand % (9*9)) as i32)) {
+                if !GameBoard::check(1+rand%9, i/9, i%9, &numbers).expect("any code following this expression is unreachable") { continue; }
                 numbers[i/9][i%9] = 1+rand%9;
                 conditions[i/9][i%9] = Condition::PreDetermined;
                 number_determined += 1;
@@ -170,6 +171,66 @@ impl GameBoard {
         }
 
         (numbers, conditions)
+    }
+
+    /// true means fine, false means there is same number(s) horizontally, vertically, or in the same region
+    fn check(number: usize, i: usize, j: usize, numbers: &[[usize; 9]; 9]) -> Result<bool, ()> {
+        let pos_i_vertical: usize = match i {
+            0..=2 => 0,
+            3..=5 => 1,
+            6..=8 => 2,
+            _ => 100,
+        };
+        let pos_i_horizontal: usize = match i {
+            0 | 3 | 6 => 0,
+            1 | 4 | 7 => 1,
+            2 | 5 | 8 => 2,
+            _ => 100,
+        };
+        let pos_j_vertical: usize = match j {
+            0..=2 => 0,
+            3..=5 => 1,
+            6..=8 => 2,
+            _ => 100,
+        };
+        let pos_j_horizontal: usize = match j {
+            0 | 3 | 6 => 0,
+            1 | 4 | 7 => 1,
+            2 | 5 | 8 => 2,
+            _ => 100,
+        };
+
+        if pos_i_vertical == 100
+            || pos_i_horizontal == 100
+            || pos_j_vertical == 100
+            || pos_j_horizontal == 100
+        {
+            return Err(());
+        }
+
+        for k in 0..9 {
+            // check same region
+            if number == numbers[i][k] && j != k {
+                return Ok(false);
+            }
+
+            // check vertical
+            if number == numbers[k / 3 * 3 + pos_i_vertical][k % 3 * 3 + pos_j_vertical] 
+                && k / 3 * 3 + pos_i_vertical != i  
+                && k % 3 * 3 + pos_j_vertical != j  
+            {
+                return Ok(false);
+            } 
+
+            // check horizontal
+            if number == numbers[k / 3 + 3 * pos_i_horizontal][k % 3 + 3 * pos_j_horizontal] 
+                && k / 3 + 3 * pos_i_horizontal != i
+                && k % 3 + 3 * pos_j_horizontal != j
+            {
+                return Ok(false);
+            }
+        }
+        return Ok(true);
     }
 }
 
