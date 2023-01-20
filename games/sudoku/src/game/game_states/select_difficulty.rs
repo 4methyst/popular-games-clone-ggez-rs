@@ -101,6 +101,20 @@ impl SelectDifficulty {
                 .to_owned()
             )
         );
+        buttons.insert(
+            "4_Back",
+            Button::new(
+                &ctx,
+                Rect::new(290., 360., 140., 30.),
+                Text::new(
+                    graphics::TextFragment::new("Back")
+                    .color(Color::WHITE)
+                    .scale(20.)
+                )
+                .set_layout(graphics::TextLayout::center())
+                .to_owned()
+            )
+        );
         let vertices = [
             graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
             graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
@@ -172,7 +186,9 @@ impl StateTrait for SelectDifficulty {
                         self.selected_difficulty = Some(Difficulty::Hard);
                         self.change_state = Some(GameState::Playing);
                     },
-                    // "1_Exit" => ctx.request_quit(),
+                    "4_Back" => {
+                        self.change_state = Some(GameState::MainMenu);
+                    },
                     _ => (),
                 }
             }
