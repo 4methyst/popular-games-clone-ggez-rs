@@ -1,6 +1,9 @@
+// use std::time::Duration;
+
 use ggez::{
     Context, GameResult,
     graphics,
+    timer::TimeContext,
 };
 
 use crate::game::{
@@ -15,6 +18,8 @@ pub struct Playing {
     number_board: NumberBoard,
     background: graphics::Mesh,
     number_selection: usize,
+    // time_start: Duration,
+    time: TimeContext,
 }
 
 impl Playing {
@@ -31,11 +36,14 @@ impl Playing {
             vertices: &vertices,
             indices: &indices,
         });
+        // let time = TimeContext::new();
         Playing {
             game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
             background,
             number_selection: 0,
+            // time_start: Duration::new(0, 0),
+            time: TimeContext::new(),
         }
     }
 
@@ -68,6 +76,13 @@ impl StateTrait for Playing {
         canvas.draw(&self.background, graphics::DrawParam::default());
         self.game_board.draw(canvas)?;
         self.number_board.draw(canvas)?;
+
+        canvas.draw(&graphics::Text::new(
+            self.time.time_since_start().as_secs().to_string())
+                .set_scale(20.).to_owned(), 
+            ggez::glam::vec2(10., 10.)
+        );
+
         Ok(())
     }
 
