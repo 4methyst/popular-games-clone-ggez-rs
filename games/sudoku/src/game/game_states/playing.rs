@@ -3,13 +3,14 @@
 use ggez::{
     Context, GameResult,
     graphics,
-    timer::TimeContext,
+    // timer::TimeContext,
 };
 
 use crate::game::{
     constants::*,
     entity::*,
     game_states::*,
+    ui::TimeUI,
     context,
 };
 
@@ -19,7 +20,7 @@ pub struct Playing {
     background: graphics::Mesh,
     number_selection: usize,
     // time_start: Duration,
-    time: TimeContext,
+    time: TimeUI,
 }
 
 impl Playing {
@@ -43,7 +44,7 @@ impl Playing {
             background,
             number_selection: 0,
             // time_start: Duration::new(0, 0),
-            time: TimeContext::new(),
+            time: TimeUI::new(),
         }
     }
 
@@ -69,6 +70,7 @@ impl Playing {
 
 impl StateTrait for Playing {
     fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
+        self.time.update();
         Ok(None)
     }
 
@@ -76,12 +78,7 @@ impl StateTrait for Playing {
         canvas.draw(&self.background, graphics::DrawParam::default());
         self.game_board.draw(canvas)?;
         self.number_board.draw(canvas)?;
-
-        canvas.draw(&graphics::Text::new(
-            self.time.time_since_start().as_secs().to_string())
-                .set_scale(20.).to_owned(), 
-            ggez::glam::vec2(10., 10.)
-        );
+        self.time.draw(canvas);
 
         Ok(())
     }

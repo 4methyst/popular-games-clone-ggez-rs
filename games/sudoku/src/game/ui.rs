@@ -1,7 +1,37 @@
 use ggez::{
     glam::Vec2, Context,
-    graphics::{ self, Mesh, Rect, Canvas, DrawParam, Text }
+    graphics::{ self, Mesh, Rect, Canvas, DrawParam, Text, TextFragment },
+    timer::TimeContext,
 };
+
+pub struct TimeUI {
+    time: TimeContext,
+    mesh: Text,
+}
+
+impl TimeUI {
+    pub fn new() -> Self {
+        let time = TimeContext::new();
+        let mesh = Text::new("Time: ")
+            .add(time.time_since_start().as_secs().to_string())
+            .add(".")
+            .add(time.time_since_start().subsec_millis().to_string())
+            .set_scale(20.).to_owned();
+        TimeUI {
+            time,
+            mesh
+        }
+    }
+
+    pub fn update(&mut self) {
+        self.mesh.fragments_mut()[1] = TextFragment::new(self.time.time_since_start().as_secs().to_string());
+        self.mesh.fragments_mut()[3] = TextFragment::new(self.time.time_since_start().subsec_millis().to_string());
+    }
+
+    pub fn draw(&mut self, canvas: &mut Canvas) {
+        canvas.draw(&self.mesh, Vec2::new(20., 20.));
+    }
+}
 
 pub struct Button {
     pub rect: Rect,
