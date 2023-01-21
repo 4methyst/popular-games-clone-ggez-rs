@@ -1,9 +1,6 @@
-// use std::time::Duration;
-
 use ggez::{
     Context, GameResult,
     graphics,
-    // timer::TimeContext,
 };
 
 use crate::game::{
@@ -19,8 +16,8 @@ pub struct Playing {
     number_board: NumberBoard,
     background: graphics::Mesh,
     number_selection: usize,
-    // time_start: Duration,
     time: TimeUI,
+    gameover: bool,
 }
 
 impl Playing {
@@ -37,14 +34,13 @@ impl Playing {
             vertices: &vertices,
             indices: &indices,
         });
-        // let time = TimeContext::new();
         Playing {
             game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
             background,
             number_selection: 0,
-            // time_start: Duration::new(0, 0),
             time: TimeUI::new(),
+            gameover: false,
         }
     }
 
@@ -70,6 +66,7 @@ impl Playing {
 
 impl StateTrait for Playing {
     fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
+        if self.gameover { return Ok(None); }
         self.time.update();
         Ok(None)
     }
@@ -84,6 +81,7 @@ impl StateTrait for Playing {
     }
 
     fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
+        if self.gameover { return Ok(()); }
         if *button == MouseButton::Left {
             for i in 0..10 {
                 if self.number_board.rect[i].contains(*point) {

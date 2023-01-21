@@ -151,7 +151,7 @@ impl GameBoard {
         let mut conditions = [[Condition::Neutral; 9]; 9];
         let number_determine: i32 = match difficulty {
             Difficulty::None => 0,
-            Difficulty::Easy => 18,
+            Difficulty::Easy => 81,
             Difficulty::Intermediate => 11,
             Difficulty::Hard => 7,
         };
@@ -159,12 +159,14 @@ impl GameBoard {
         let mut number_determined = 0;
 
         for i in 0..std::u32::MAX {
+            if i >= 1000000 { break; }
             let i: usize = (i % (9 * 9)) as usize;
             if number_determined >= number_determine { break; }
             let rand: usize = rand::random();
 
-            if chance.contains(&((rand % (9*9)) as i32)) {
-                if !GameBoard::check(1+rand%9, i/9, i%9, &numbers).expect("any code following this expression is unreachable") { continue; }
+            if chance.contains(&((rand % (9*9)) as i32)) 
+                && GameBoard::check(1+rand%9, i/9, i%9, &numbers).unwrap() 
+                && conditions[1/9][1%9] != Condition::PreDetermined {
                 numbers[i/9][i%9] = 1+rand%9;
                 conditions[i/9][i%9] = Condition::PreDetermined;
                 number_determined += 1;
@@ -217,16 +219,14 @@ impl GameBoard {
 
             // check vertical
             if number == numbers[k / 3 * 3 + pos_i_vertical][k % 3 * 3 + pos_j_vertical] 
-                && k / 3 * 3 + pos_i_vertical != i  
-                && k % 3 * 3 + pos_j_vertical != j  
+                && !(k / 3 * 3 + pos_i_vertical == i && k % 3 * 3 + pos_j_vertical == j)  
             {
                 return Ok(false);
             } 
 
             // check horizontal
             if number == numbers[(pos_i_horizontal * 3) + (k / 3)][(pos_j_horizontal * 3) + (k % 3)] 
-                && (pos_i_horizontal * 3) + (k / 3) != i
-                && (pos_j_horizontal * 3) + (k % 3) != j
+                && !((pos_i_horizontal * 3) + (k / 3) == i && (pos_j_horizontal * 3) + (k % 3) == j)
             {
                 return Ok(false);
             }
