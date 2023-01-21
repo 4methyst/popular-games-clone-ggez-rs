@@ -7,17 +7,19 @@ use crate::game::{
     constants::*,
     entity::*,
     game_states::*,
-    ui::TimeUI,
+    ui::*,
     context,
 };
 
 pub struct Playing {
     game_board: GameBoard,
     number_board: NumberBoard,
+    back_button: Button,
     background: graphics::Mesh,
     number_selection: usize,
     time: TimeUI,
     gameover: bool,
+    change_state: Option<GameState>,
 }
 
 impl Playing {
@@ -34,13 +36,26 @@ impl Playing {
             vertices: &vertices,
             indices: &indices,
         });
+        let back_button = Button::new(
+            &ctx,
+            graphics::Rect::new(600., 20., 80., 30.),
+            graphics::Text::new(
+                graphics::TextFragment::new("Back")
+                .color(graphics::Color::WHITE)
+                .scale(20.)
+            )
+            .set_layout(graphics::TextLayout::center())
+            .to_owned()
+        );
         Playing {
             game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
+            back_button,
             background,
             number_selection: 0,
             time: TimeUI::new(),
             gameover: false,
+            change_state: None,
         }
     }
 
@@ -66,7 +81,12 @@ impl Playing {
 
 impl StateTrait for Playing {
     fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
+        if let Some(new_state) = self.change_state {
+            return Ok(Some(new_state));
+        }
+
         if self.gameover { return Ok(None); }
+
         self.time.update();
         Ok(None)
     }
@@ -75,14 +95,20 @@ impl StateTrait for Playing {
         canvas.draw(&self.background, graphics::DrawParam::default());
         self.game_board.draw(canvas)?;
         self.number_board.draw(canvas)?;
+        self.back_button.draw(canvas);
         self.time.draw(canvas);
 
         Ok(())
     }
 
     fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
-        if self.gameover { return Ok(()); }
         if *button == MouseButton::Left {
+            if self.back_button.rect.contains(*point) {
+                self.change_state = Some(GameState::SelectDifficulty);
+            }
+
+            if self.gameover { return Ok(()); }
+
             for i in 0..10 {
                 if self.number_board.rect[i].contains(*point) {
                     self.number_selection = i;

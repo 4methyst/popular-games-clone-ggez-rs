@@ -5,7 +5,7 @@ pub mod main_menu;
 pub mod playing;
 pub mod select_difficulty;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum GameState {
     MainMenu,
     SelectDifficulty,

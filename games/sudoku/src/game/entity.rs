@@ -151,7 +151,7 @@ impl GameBoard {
         let mut conditions = [[Condition::Neutral; 9]; 9];
         let number_determine: i32 = match difficulty {
             Difficulty::None => 0,
-            Difficulty::Easy => 81,
+            Difficulty::Easy => 18,
             Difficulty::Intermediate => 11,
             Difficulty::Hard => 7,
         };
@@ -159,7 +159,6 @@ impl GameBoard {
         let mut number_determined = 0;
 
         for i in 0..std::u32::MAX {
-            if i >= 1000000 { break; }
             let i: usize = (i % (9 * 9)) as usize;
             if number_determined >= number_determine { break; }
             let rand: usize = rand::random();
