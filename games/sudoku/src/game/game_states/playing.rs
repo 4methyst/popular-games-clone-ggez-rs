@@ -8,7 +8,7 @@ use crate::game::{
     entity::*,
     game_states::*,
     ui::*,
-    context, self,
+    context,
 };
 
 pub struct Playing {
@@ -121,6 +121,7 @@ impl StateTrait for Playing {
                 if self.number_board.rect[i].contains(*point) {
                     self.number_selection = i;
                     self.number_board.number_selection = self.number_selection;
+                    self.game_board.number_selected = self.number_selection as u32;
                 }
             }
 

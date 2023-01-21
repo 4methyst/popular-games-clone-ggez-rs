@@ -25,6 +25,7 @@ pub struct GameBoard {
     pub grid_rect: [[Rect; 9]; 9],
     pub numbers: [[usize; 9]; 9],
     pub number_state: [[Condition; 9]; 9],
+    pub number_selected: u32,
     grid_mesh: Mesh,
     region_mesh: Mesh,
     number_draw: [Text; 10],
@@ -104,7 +105,8 @@ impl GameBoard {
             region_mesh,
             numbers,
             number_state,
-            number_draw
+            number_draw,
+            number_selected: 0,
         }
     }
 
@@ -131,6 +133,16 @@ impl GameBoard {
                     .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
                     .z(index).color(color)
                 );
+
+                if self.numbers[i][j] == self.number_selected as usize 
+                    && self.numbers[i][j] != 0 {
+                    canvas.draw(
+                        &self.grid_mesh,
+                        graphics::DrawParam::default()
+                        .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
+                        .z(4).color(graphics::Color::CYAN)
+                    );
+                }
 
                 canvas.draw(
                     &self.number_draw[self.numbers[i][j]],
