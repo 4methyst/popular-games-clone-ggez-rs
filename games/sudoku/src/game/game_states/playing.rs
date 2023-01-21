@@ -8,7 +8,7 @@ use crate::game::{
     entity::*,
     game_states::*,
     ui::*,
-    context,
+    context, self,
 };
 
 pub struct Playing {
@@ -60,6 +60,7 @@ impl Playing {
     }
 
     fn update_state(&mut self) {
+        let mut gameover = false;
         for i in 0..9 {
             for j in 0..9 {
                 if !GameBoard::check(self.game_board.numbers[i][j], i, j, &self.game_board.numbers).expect("Error") 
@@ -74,8 +75,15 @@ impl Playing {
                 else {
                     self.game_board.number_state[i][j] = Condition::Neutral;
                 }
+
+                if !gameover {
+                    if self.game_board.number_state[i][j] == Condition::Wrong || self.game_board.numbers[i][j] == 0 {
+                        gameover = true;
+                    }
+                }
             }
         }
+        self.gameover = !gameover;
     }
 }
 
