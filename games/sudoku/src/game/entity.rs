@@ -75,16 +75,12 @@ impl GameBoard {
             graphics::Color::WHITE,
         ).unwrap();
 
-        // let numbers = [[0usize; 9]; 9];
-        // let number_state = [[Condition::Neutral; 9]; 9];
-
         let (numbers, number_state) = GameBoard::define_numbers(difficulty);
 
         let mut number_draw: [Text; 10] = Default::default();
 
         number_draw[0] = Text::new(
             graphics::TextFragment::new("")
-            // .color(graphics::Color::WHITE)
             .scale(0.)
         )
         .set_layout(graphics::TextLayout::center()).to_owned();
@@ -93,7 +89,6 @@ impl GameBoard {
             let number = i.to_string();
             number_draw[i] = Text::new(
                 graphics::TextFragment::new(number)
-                // .color(graphics::Color::WHITE)
                 .scale(17.)
             )
             .set_layout(graphics::TextLayout::center()).to_owned();
