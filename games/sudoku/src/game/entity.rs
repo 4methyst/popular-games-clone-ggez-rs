@@ -3,6 +3,8 @@ use ggez::{
     Context, GameResult, 
     graphics::{ self, Mesh, Rect, Text }
 };
+use std::time::Duration;
+use serde::{Serialize, Deserialize};
 
 const GRID_DIMENSION: (f32, f32) = (40., 40.);
 
@@ -13,12 +15,29 @@ pub enum Condition {
     Wrong,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum Difficulty {
     None,
     Easy,
     Intermediate,
     Hard,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Score {
+    pub name: String,
+    pub difficulty: Difficulty,
+    pub time: Duration,
+}
+
+impl Score {
+    pub fn new(name: &str, difficulty: Difficulty, time: Duration) -> Self{
+        Score {
+            name: String::from(name), 
+            difficulty, 
+            time,
+        }
+    }
 }
 
 pub struct GameBoard {

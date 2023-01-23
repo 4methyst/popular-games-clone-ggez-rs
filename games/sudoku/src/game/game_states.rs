@@ -4,6 +4,7 @@ use super::context::AddOnContext;
 pub mod main_menu;
 pub mod playing;
 pub mod select_difficulty;
+pub mod leader_board;
 
 #[derive(Clone, Copy)]
 pub enum GameState {
