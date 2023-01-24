@@ -63,7 +63,7 @@ impl MainMenu {
                 &ctx,
                 Rect::new(280., 260., 160., 40.),
                 Text::new(
-                    graphics::TextFragment::new("LEADER BOARD")
+                    graphics::TextFragment::new("LEADERBOARD")
                     .color(Color::WHITE)
                     .scale(20.)
                 )
