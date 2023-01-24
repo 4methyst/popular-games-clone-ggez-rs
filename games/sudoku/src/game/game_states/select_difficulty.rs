@@ -53,7 +53,7 @@ impl SelectDifficulty {
                 Text::new(
                     graphics::TextFragment::new("None")
                     .color(Color::WHITE)
-                    .scale(20.)
+                    .scale(18.)
                 )
                 .set_layout(graphics::TextLayout::center())
                 .to_owned()
@@ -67,7 +67,7 @@ impl SelectDifficulty {
                 Text::new(
                     graphics::TextFragment::new("Easy")
                     .color(Color::WHITE)
-                    .scale(20.)
+                    .scale(18.)
                 )
                 .set_layout(graphics::TextLayout::center())
                 .to_owned()
@@ -81,7 +81,7 @@ impl SelectDifficulty {
                 Text::new(
                     graphics::TextFragment::new("Intermediate")
                     .color(Color::WHITE)
-                    .scale(20.)
+                    .scale(18.)
                 )
                 .set_layout(graphics::TextLayout::center())
                 .to_owned()
@@ -95,7 +95,7 @@ impl SelectDifficulty {
                 Text::new(
                     graphics::TextFragment::new("Hard")
                     .color(Color::WHITE)
-                    .scale(20.)
+                    .scale(18.)
                 )
                 .set_layout(graphics::TextLayout::center())
                 .to_owned()
@@ -109,7 +109,7 @@ impl SelectDifficulty {
                 Text::new(
                     graphics::TextFragment::new("Back")
                     .color(Color::WHITE)
-                    .scale(20.)
+                    .scale(18.)
                 )
                 .set_layout(graphics::TextLayout::center())
                 .to_owned()

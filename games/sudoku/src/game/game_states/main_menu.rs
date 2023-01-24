@@ -47,7 +47,7 @@ impl MainMenu {
             "Play",
             Button::new(
                 &ctx,
-                Rect::new(320., 200., 80., 30.),
+                Rect::new(320., 200., 80., 40.),
                 Text::new(
                     graphics::TextFragment::new("PLAY")
                     .color(Color::WHITE)
@@ -61,7 +61,7 @@ impl MainMenu {
             "LeaderBoard",
             Button::new(
                 &ctx,
-                Rect::new(320., 250., 80., 30.),
+                Rect::new(280., 260., 160., 40.),
                 Text::new(
                     graphics::TextFragment::new("LEADER BOARD")
                     .color(Color::WHITE)
@@ -75,7 +75,7 @@ impl MainMenu {
             "Exit",
             Button::new(
                 &ctx,
-                Rect::new(320., 300., 80., 30.),
+                Rect::new(320., 320., 80., 40.),
                 Text::new(
                     graphics::TextFragment::new("EXIT")
                     .color(Color::WHITE)

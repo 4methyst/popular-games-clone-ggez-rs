@@ -1,19 +1,22 @@
 use ggez::{
-    Context,
+    Context, GameResult,
     glam::Vec2,
     graphics::{self, Text, Mesh},
 };
 use std::fs;
 use ron::de;
 use crate::game::{
-    game_states::StateTrait,
+    ui::Button,
+    game_states::*,
     entity::Score,
     constants::SCREEN_SIZE,
 };
 
 pub struct LeaderBoard {
     scores: Vec<Score>,
+    back_button: Button,
     background: Mesh,
+    change_state: Option<GameState>,
 }
 
 impl LeaderBoard {
@@ -32,19 +35,35 @@ impl LeaderBoard {
             vertices: &vertices,
             indices: &indices,
         });
+        let back_button = Button::new(
+            &ctx,
+            graphics::Rect::new(600., 20., 80., 30.),
+            graphics::Text::new(
+                graphics::TextFragment::new("Back")
+                .color(graphics::Color::WHITE)
+                .scale(20.)
+            )
+            .set_layout(graphics::TextLayout::center())
+            .to_owned()
+        );
         LeaderBoard {
             scores,
+            back_button,
             background,
+            change_state: None,
         }
     }
 }
 
 impl StateTrait for LeaderBoard {
-    fn update(&mut self, _ctx: &Context, _addon_ctx: &mut crate::game::context::AddOnContext) -> ggez::GameResult<Option<super::GameState>> {
+    fn update(&mut self, _ctx: &Context, _addon_ctx: &mut crate::game::context::AddOnContext) -> GameResult<Option<GameState>> {
+        if let Some(new_state) = self.change_state {
+            return Ok(Some(new_state));
+        }
         Ok(None)
     }
 
-    fn draw(&mut self, _ctx: &mut Context, canvas: &mut ggez::graphics::Canvas) -> ggez::GameResult {
+    fn draw(&mut self, _ctx: &mut Context, canvas: &mut ggez::graphics::Canvas) -> GameResult {
         canvas.draw(&self.background, graphics::DrawParam::default());
         for i in 0..self.scores.len() {
             canvas.draw(
@@ -56,10 +75,14 @@ impl StateTrait for LeaderBoard {
                 Vec2::new(30., 20. * i as f32 + 30.)
             );
         }
+        self.back_button.draw(canvas);
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, _ctx: &mut Context, _button: &ggez::event::MouseButton, _point: &ggez::mint::Point2<f32>) -> ggez::GameResult {
+    fn mouse_button_down_event(&mut self, _ctx: &mut Context, _button: &ggez::event::MouseButton, point: &ggez::mint::Point2<f32>) -> GameResult {
+        if self.back_button.rect.contains(*point) {
+            self.change_state = Some(GameState::MainMenu);
+        }
         Ok(())
     }
 }
