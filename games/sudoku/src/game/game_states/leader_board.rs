@@ -48,12 +48,12 @@ impl StateTrait for LeaderBoard {
         canvas.draw(&self.background, graphics::DrawParam::default());
         for i in 0..self.scores.len() {
             canvas.draw(
-                &Text::new(i.to_string()).add(" ")
+                &Text::new((i+1).to_string()).add(". ")
                 .add(self.scores[i].name.clone()).add(" ")
                 .add(self.scores[i].difficulty).add(" ")
                 .add(self.scores[i].time.as_secs().to_string()).add(".")
                 .add(self.scores[i].time.subsec_millis().to_string()).to_owned(),
-                Vec2::new(30., 10. * i as f32 + 30.)
+                Vec2::new(30., 20. * i as f32 + 30.)
             );
         }
         Ok(())

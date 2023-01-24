@@ -44,7 +44,7 @@ impl MainMenu {
         );
         let mut buttons = BTreeMap::new();
         buttons.insert(
-            "0_Play",
+            "Play",
             Button::new(
                 &ctx,
                 Rect::new(320., 200., 80., 30.),
@@ -58,10 +58,24 @@ impl MainMenu {
             )
         );
         buttons.insert(
-            "1_Exit",
+            "LeaderBoard",
             Button::new(
                 &ctx,
                 Rect::new(320., 250., 80., 30.),
+                Text::new(
+                    graphics::TextFragment::new("LEADER BOARD")
+                    .color(Color::WHITE)
+                    .scale(20.)
+                )
+                .set_layout(graphics::TextLayout::center())
+                .to_owned()
+            )
+        );
+        buttons.insert(
+            "Exit",
+            Button::new(
+                &ctx,
+                Rect::new(320., 300., 80., 30.),
                 Text::new(
                     graphics::TextFragment::new("EXIT")
                     .color(Color::WHITE)
@@ -124,8 +138,9 @@ impl StateTrait for MainMenu {
         for (key, buttonui) in self.buttons.iter_mut() {
             if buttonui.rect.contains(*point) && *button == MouseButton::Left {
                 match *key {
-                    "0_Play" => self.change_state = Some(GameState::SelectDifficulty),
-                    "1_Exit" => ctx.request_quit(),
+                    "Play" => self.change_state = Some(GameState::SelectDifficulty),
+                    "LeaderBoard" => self.change_state = Some(GameState::LeaderBoard),
+                    "Exit" => ctx.request_quit(),
                     _ => (),
                 }
             }

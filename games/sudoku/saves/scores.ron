@@ -3,6 +3,22 @@
         name: "Something",
         difficulty: None,
         time: Duration(
+            secs: 70,
+            nanos: 28286300,
+        ),
+    ),
+    Score(
+        name: "Ikan",
+        difficulty: None,
+        time: Duration(
+            secs: 71,
+            nanos: 528722600,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
             secs: 96,
             nanos: 728722600,
         ),
