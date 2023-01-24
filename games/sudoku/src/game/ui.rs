@@ -5,7 +5,7 @@ use ggez::{
 };
 
 pub struct TimeUI {
-    time: TimeContext,
+    pub time: TimeContext,
     mesh: Text,
 }
 

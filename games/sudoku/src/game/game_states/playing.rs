@@ -11,13 +11,18 @@ use crate::game::{
     context,
 };
 
+use std::{fs, io::Write};
+use ron::{ser, de};
+
 pub struct Playing {
     game_board: GameBoard,
     number_board: NumberBoard,
     back_button: Button,
     background: graphics::Mesh,
     number_selection: usize,
+    difficulty: Difficulty,
     time: TimeUI,
+    scores: Vec<Score>,
     gameover: bool,
     change_state: Option<GameState>,
 }
@@ -36,6 +41,7 @@ impl Playing {
             vertices: &vertices,
             indices: &indices,
         });
+
         let back_button = Button::new(
             &ctx,
             graphics::Rect::new(600., 20., 80., 30.),
@@ -47,20 +53,26 @@ impl Playing {
             .set_layout(graphics::TextLayout::center())
             .to_owned()
         );
+
+        let serialized = fs::read_to_string("./games/sudoku/saves/scores.ron").unwrap();
+        let scores: Vec<Score> = de::from_str(&serialized).unwrap();
+        
         Playing {
             game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
             back_button,
             background,
             number_selection: 0,
+            difficulty: addon_ctx.difficulty.unwrap(),
             time: TimeUI::new(),
+            scores,
             gameover: false,
             change_state: None,
         }
     }
 
     fn update_state(&mut self) {
-        let mut gameover = false;
+        let mut gameover = true;
         for i in 0..9 {
             for j in 0..9 {
                 if !GameBoard::check(self.game_board.numbers[i][j], i, j, &self.game_board.numbers).expect("Error") 
@@ -76,14 +88,28 @@ impl Playing {
                     self.game_board.number_state[i][j] = Condition::Neutral;
                 }
 
-                if !gameover {
+                if gameover {
                     if self.game_board.number_state[i][j] == Condition::Wrong || self.game_board.numbers[i][j] == 0 {
-                        gameover = true;
+                        gameover = false;
                     }
                 }
             }
         }
-        self.gameover = !gameover;
+        if gameover { self.gameover(); }
+    }
+
+    fn gameover(&mut self) {
+        self.gameover = true;
+        self.scores.push(Score::new("Something", self.difficulty, self.time.time.time_since_start()));
+        self.scores.sort_by_key(|score| score.time.as_millis());
+
+        let serialized = ser::to_string_pretty(
+            &self.scores, 
+            ser::PrettyConfig::default().struct_names(true)
+        ).unwrap();
+        fs::File::create("./games/sudoku/saves/scores.ron").unwrap().write_all(serialized.as_bytes()).unwrap();
+
+        self.change_state = Some(GameState::LeaderBoard);
     }
 }
 

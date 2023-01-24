@@ -1,1 +1,18 @@
-[]
+[
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 96,
+            nanos: 728722600,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 121,
+            nanos: 868063200,
+        ),
+    ),
+]

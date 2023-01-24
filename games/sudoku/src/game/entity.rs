@@ -1,7 +1,7 @@
 use ggez::{
     glam::Vec2,
     Context, GameResult, 
-    graphics::{ self, Mesh, Rect, Text }
+    graphics::{ self, Mesh, Rect, Text, TextFragment }
 };
 use std::time::Duration;
 use serde::{Serialize, Deserialize};
@@ -15,7 +15,7 @@ pub enum Condition {
     Wrong,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum Difficulty {
     None,
     Easy,
@@ -23,7 +23,18 @@ pub enum Difficulty {
     Hard,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+impl Into<TextFragment> for Difficulty {
+    fn into(self) -> TextFragment {
+        match self {
+            Difficulty::None => TextFragment::new("None"),
+            Difficulty::Easy => TextFragment::new("Easy"),
+            Difficulty::Intermediate => TextFragment::new("Intermediate"),
+            Difficulty::Hard => TextFragment::new("Hard"),
+        }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Score {
     pub name: String,
     pub difficulty: Difficulty,

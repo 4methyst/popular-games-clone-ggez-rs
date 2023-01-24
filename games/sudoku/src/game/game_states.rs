@@ -11,6 +11,7 @@ pub enum GameState {
     MainMenu,
     SelectDifficulty,
     Playing,
+    LeaderBoard,
 }
 
 pub trait StateTrait {

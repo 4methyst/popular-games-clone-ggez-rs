@@ -11,6 +11,7 @@ use crate::game::{
         main_menu::MainMenu,
         playing::Playing,
         select_difficulty::SelectDifficulty,
+        leader_board::LeaderBoard,
     },
     constants::*,
     context,
@@ -44,6 +45,7 @@ impl App {
             GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
             GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
             GameState::Playing => Box::new(Playing::new(&ctx, &context::AddOnContext::new_forced())),
+            GameState::LeaderBoard => Box::new(LeaderBoard::new(&ctx)),
         };
         App {
             current_state,
@@ -56,6 +58,7 @@ impl App {
             GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
             GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
             GameState::Playing => Box::new(Playing::new(&ctx, &self.addon_ctx)),
+            GameState::LeaderBoard => Box::new(LeaderBoard::new(&ctx)),
         };
         let old_state = std::mem::replace(&mut self.current_state, new_state);
         std::mem::drop(old_state);
