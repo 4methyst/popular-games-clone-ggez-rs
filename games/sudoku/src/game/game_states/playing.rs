@@ -44,7 +44,7 @@ impl Playing {
 
         let back_button = Button::new(
             &ctx,
-            graphics::Rect::new(600., 20., 80., 30.),
+            graphics::Rect::new(60., 390., 80., 30.),
             graphics::Text::new(
                 graphics::TextFragment::new("Back")
                 .color(graphics::Color::WHITE)
