@@ -6,7 +6,7 @@ use ggez::{
 use std::{fs, collections::BTreeMap};
 use ron::de;
 use crate::game::{
-    ui::Button,
+    ui::*,
     game_states::*,
     entity::Score,
     constants::SCREEN_SIZE,
@@ -100,8 +100,7 @@ impl StateTrait for LeaderBoard {
                 &Text::new((i+1).to_string()).add(". ")
                 .add(self.scores[i].name.clone()).add(" ")
                 .add(self.scores[i].difficulty).add(" ")
-                .add(self.scores[i].time.as_secs().to_string()).add(".")
-                .add(self.scores[i].time.subsec_millis().to_string()).to_owned(),
+                .add(TimeUI::format_common(&self.scores[i].time)).to_owned(),
                 Vec2::new(30., 20. * i as f32 + 100.)
             );
         }

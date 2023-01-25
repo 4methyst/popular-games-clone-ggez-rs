@@ -4,6 +4,8 @@ use ggez::{
     timer::TimeContext,
 };
 
+use std::time::Duration;
+
 pub struct TimeUI {
     pub time: TimeContext,
     mesh: Text,
@@ -13,9 +15,7 @@ impl TimeUI {
     pub fn new() -> Self {
         let time = TimeContext::new();
         let mesh = Text::new("Time: ")
-            .add(time.time_since_start().as_secs().to_string())
-            .add(".")
-            .add(time.time_since_start().subsec_millis().to_string())
+            .add(TimeUI::format_common(&time.time_since_start()))
             .set_scale(20.).to_owned();
         TimeUI {
             time,
@@ -23,15 +23,22 @@ impl TimeUI {
         }
     }
 
+    pub fn format_common(time: &Duration) -> String {
+        let secs = time.as_secs();
+        let milli = &time.subsec_millis().to_string()[0..1];
+    
+        (secs/60).to_string() + ":" + &(secs%60).to_string() + "." + milli
+    }
+
     pub fn update(&mut self) {
-        self.mesh.fragments_mut()[1] = TextFragment::new(self.time.time_since_start().as_secs().to_string());
-        self.mesh.fragments_mut()[3] = TextFragment::new(self.time.time_since_start().subsec_millis().to_string());
+        self.mesh.fragments_mut()[1] = TextFragment::new(TimeUI::format_common(&self.time.time_since_start()));
     }
 
     pub fn draw(&mut self, canvas: &mut Canvas) {
         canvas.draw(&self.mesh, Vec2::new(20., 20.));
     }
 }
+
 
 pub struct Button {
     pub rect: Rect,
