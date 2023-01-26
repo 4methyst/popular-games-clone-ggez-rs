@@ -57,6 +57,7 @@ pub struct GameBoard {
     pub number_state: [[Condition; 9]; 9],
     pub number_selected: u8,
     grid_mesh: Mesh,
+    grid_mesh_selection: Mesh,
     region_mesh: Mesh,
     number_draw: [Text; 10],
 }
@@ -89,11 +90,26 @@ impl GameBoard {
             }, 
             graphics::Color::WHITE,
         ).unwrap();
+        let grid_mesh_selection = Mesh::new_rectangle(
+            ctx, 
+            graphics::DrawMode::Stroke( 
+                graphics::StrokeOptions::default()
+                .with_line_width(2.)
+                .with_line_join(graphics::LineJoin::Bevel)
+             ), 
+            Rect {
+                x: 0.,
+                y: 0.,
+                w: GRID_DIMENSION.0,
+                h: GRID_DIMENSION.1,
+            }, 
+            graphics::Color::WHITE,
+        ).unwrap();
         let region_mesh = Mesh::new_rectangle(
             ctx, 
             graphics::DrawMode::Stroke( 
                 graphics::StrokeOptions::default()
-                .with_line_width(3.)
+                .with_line_width(2.)
                 .with_line_join(graphics::LineJoin::Bevel)
              ), 
             Rect {
@@ -127,6 +143,7 @@ impl GameBoard {
         GameBoard {
             grid_rect,
             grid_mesh,
+            grid_mesh_selection,
             region_mesh,
             numbers,
             number_state,
@@ -148,24 +165,25 @@ impl GameBoard {
             );
             for j in 0..9 {
                 let (index, color) = match self.number_state[i][j] {
-                    Condition::PreDetermined => (2, graphics::Color::GREEN),
+                    Condition::PreDetermined => (2, graphics::Color::new(0.8,0.8,0.3,1.0)),
                     Condition::Neutral => (1, graphics::Color::WHITE),
                     Condition::Wrong => (3, graphics::Color::RED),
                 };
-                canvas.draw(
-                    &self.grid_mesh,
-                    graphics::DrawParam::default()
-                    .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
-                    .z(index).color(color)
-                );
 
                 if self.numbers[i][j] == self.number_selected
                     && self.numbers[i][j] != 0 {
                     canvas.draw(
+                        &self.grid_mesh_selection,
+                        graphics::DrawParam::default()
+                        .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
+                        .z(5).color(graphics::Color::CYAN)
+                    );
+                } else {  
+                    canvas.draw(
                         &self.grid_mesh,
                         graphics::DrawParam::default()
                         .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
-                        .z(4).color(graphics::Color::CYAN)
+                        .z(index).color(color)
                     );
                 }
 
@@ -188,7 +206,7 @@ impl GameBoard {
         GameBoard::solve_sudoku(&mut numbers);
         let mut conditions = [[Condition::PreDetermined; 9]; 9];
         let number_remove: usize = match difficulty {
-            Difficulty::None => 81,
+            Difficulty::None => 0,
             Difficulty::Easy => 45,
             Difficulty::Intermediate => 54,
             Difficulty::Hard => 63,

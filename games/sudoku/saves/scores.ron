@@ -3,6 +3,46 @@
         name: "Something",
         difficulty: None,
         time: Duration(
+            secs: 0,
+            nanos: 15746600,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 0,
+            nanos: 16579600,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 0,
+            nanos: 16442600,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 0,
+            nanos: 29807400,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
+            secs: 0,
+            nanos: 46939100,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
             secs: 70,
             nanos: 28286300,
         ),
