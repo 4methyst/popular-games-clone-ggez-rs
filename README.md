@@ -16,19 +16,16 @@ This project is for personal and educational only. I do not have purpose to mone
 
 ### Dependencies
 
-Here are/is the list of dependencies this project uses:
-
-* [ggez](https://ggez.rs)
-
-For now there's only ggez library but i will add more eventually.
+I use several dependencies in this project, but the dependency that I definitely use in all games is [ggez](https://ggez.rs). I use other dependencies too but I will list them in each games folder because each game use different dependencies.
 
 ### Games
 
 here are/is the list of games in this project:
 
-* [Tic tac toe](https://github.com/4methyst/popular-games-clone-ggez-rs/releases/tag/tic-tac-toe)
+* [Tic tac toe](https://github.com/alimulap/popular-games-clone-ggez-rs/tree/main/games/tic-tac-toe)
+* [Sudoku](https://github.com/alimulap/popular-games-clone-ggez-rs/tree/main/games/sudoku)
 
-For now there's only one game presented but i will add more for sure!
+I will add more for sure!
 
 You can try the game by compiling the source code or you can just run the [executable](https://github.com/alimulap/popular-games-clone-ggez-rs/raw/main/executable.rar). Note that in that rar file there's only windows executable files, if you are using other operating system please compile it by yourself or you could direcly ask me on [discord](https://github.com/4methyst/popular-games-clone-ggez-rs#notes).
 
