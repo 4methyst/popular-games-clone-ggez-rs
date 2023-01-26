@@ -19,7 +19,7 @@ pub struct Playing {
     number_board: NumberBoard,
     back_button: Button,
     background: graphics::Mesh,
-    number_selection: usize,
+    number_selection: u8,
     difficulty: Difficulty,
     time: TimeUI,
     scores: Vec<Score>,
@@ -58,7 +58,7 @@ impl Playing {
         let scores: Vec<Score> = de::from_str(&serialized).unwrap();
         
         Playing {
-            game_board: GameBoard::init(&ctx, &addon_ctx.difficulty.unwrap()),
+            game_board: GameBoard::init(&ctx, 180., 60., &addon_ctx.difficulty.unwrap()),
             number_board: NumberBoard::init(&ctx),
             back_button,
             background,
@@ -75,7 +75,7 @@ impl Playing {
         let mut gameover = true;
         for i in 0..9 {
             for j in 0..9 {
-                if !GameBoard::check(self.game_board.numbers[i][j], i, j, &self.game_board.numbers).expect("Error") 
+                if !GameBoard::check_valid(self.game_board.numbers[i][j], i, j, &self.game_board.numbers)
                     && self.game_board.number_state[i][j] != Condition::PreDetermined
                     && self.game_board.numbers[i][j] != 0
                 {
@@ -121,6 +121,7 @@ impl StateTrait for Playing {
 
         if self.gameover { return Ok(None); }
 
+        self.update_state();
         self.time.update();
         Ok(None)
     }
@@ -145,9 +146,9 @@ impl StateTrait for Playing {
 
             for i in 0..10 {
                 if self.number_board.rect[i].contains(*point) {
-                    self.number_selection = i;
+                    self.number_selection = i as u8;
                     self.number_board.number_selection = self.number_selection;
-                    self.game_board.number_selected = self.number_selection as u32;
+                    self.game_board.number_selected = self.number_selection;
                 }
             }
 

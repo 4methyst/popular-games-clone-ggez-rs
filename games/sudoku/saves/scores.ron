@@ -27,6 +27,14 @@
         name: "Something",
         difficulty: None,
         time: Duration(
+            secs: 106,
+            nanos: 235293300,
+        ),
+    ),
+    Score(
+        name: "Something",
+        difficulty: None,
+        time: Duration(
             secs: 121,
             nanos: 868063200,
         ),

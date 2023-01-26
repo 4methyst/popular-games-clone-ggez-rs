@@ -53,22 +53,22 @@ impl Score {
 
 pub struct GameBoard {
     pub grid_rect: [[Rect; 9]; 9],
-    pub numbers: [[usize; 9]; 9],
+    pub numbers: [[u8; 9]; 9],
     pub number_state: [[Condition; 9]; 9],
-    pub number_selected: u32,
+    pub number_selected: u8,
     grid_mesh: Mesh,
     region_mesh: Mesh,
     number_draw: [Text; 10],
 }
 
 impl GameBoard {
-    pub fn init(ctx: &Context, difficulty: &Difficulty) -> GameBoard {
+    pub fn init(ctx: &Context, x: f32, y: f32, difficulty: &Difficulty) -> GameBoard {
         let mut grid_rect = [[Rect::default(); 9]; 9];
         for i in 0..9 {
             for j in 0..9 {
                 grid_rect[i][j] = Rect::new(
-                    180. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.) + (j%3) as f32 * GRID_DIMENSION.0,
-                    60. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.) + (j/3) as f32 * GRID_DIMENSION.1,
+                    x + (j as f32 * GRID_DIMENSION.0),
+                    y + (i as f32 * GRID_DIMENSION.1),
                     GRID_DIMENSION.0,
                     GRID_DIMENSION.1
                 );
@@ -105,7 +105,7 @@ impl GameBoard {
             graphics::Color::WHITE,
         ).unwrap();
 
-        let (numbers, number_state) = GameBoard::define_numbers(difficulty);
+        let (numbers, number_state) = GameBoard::generate_sudoku(difficulty);
 
         let mut number_draw: [Text; 10] = Default::default();
 
@@ -159,7 +159,7 @@ impl GameBoard {
                     .z(index).color(color)
                 );
 
-                if self.numbers[i][j] == self.number_selected as usize 
+                if self.numbers[i][j] == self.number_selected
                     && self.numbers[i][j] != 0 {
                     canvas.draw(
                         &self.grid_mesh,
@@ -170,7 +170,7 @@ impl GameBoard {
                 }
 
                 canvas.draw(
-                    &self.number_draw[self.numbers[i][j]],
+                    &self.number_draw[self.numbers[i][j] as usize],
                     graphics::DrawParam::default()
                     .dest(Vec2::new(
                         self.grid_rect[i][j].x + GRID_DIMENSION.0 / 2.,
@@ -183,92 +183,91 @@ impl GameBoard {
         Ok(())
     }
 
-    fn define_numbers(difficulty: &Difficulty) -> ([[usize; 9]; 9],[[Condition; 9]; 9]) {
-        let mut numbers = [[0usize; 9]; 9];
-        let mut conditions = [[Condition::Neutral; 9]; 9];
-        let number_determine: i32 = match difficulty {
-            Difficulty::None => 0,
-            Difficulty::Easy => 18,
-            Difficulty::Intermediate => 11,
-            Difficulty::Hard => 7,
+    fn generate_sudoku(difficulty: &Difficulty) -> ([[u8; 9]; 9],[[Condition; 9]; 9]) {
+        let mut numbers = [[0u8; 9]; 9];
+        GameBoard::solve_sudoku(&mut numbers);
+        let mut conditions = [[Condition::PreDetermined; 9]; 9];
+        let number_remove: usize = match difficulty {
+            Difficulty::None => 81,
+            Difficulty::Easy => 45,
+            Difficulty::Intermediate => 54,
+            Difficulty::Hard => 63,
         };
-        let chance = 0..number_determine;
-        let mut number_determined = 0;
+        let mut number_removed = Vec::new();
 
-        for i in 0..std::u32::MAX {
-            if i >= 1000000 { break; }
-            let i: usize = (i % (9 * 9)) as usize;
-            if number_determined >= number_determine { break; }
-            let rand: usize = rand::random();
-
-            if chance.contains(&((rand % (9*9)) as i32)) 
-                && GameBoard::check(1+rand%9, i/9, i%9, &numbers).unwrap() 
-                && conditions[1/9][1%9] != Condition::PreDetermined {
-                numbers[i/9][i%9] = 1+rand%9;
-                conditions[i/9][i%9] = Condition::PreDetermined;
-                number_determined += 1;
+        while number_removed.len() < number_remove {
+            let (i, j): (usize, usize) = {
+                let rand = rand::random::<usize>() % 81;
+                (rand/9,rand%9)
+            };
+            if numbers[i][j] == 0 {
+                continue;
+            }
+            let backup = numbers[i][j];
+            numbers[i][j] = 0;
+            conditions[i][j] = Condition::Neutral;
+            number_removed.push((i, j, backup));
+            if GameBoard::has_unique_solution(&numbers) {
+                let (i, j, backup) = number_removed.pop().unwrap();
+                numbers[i][j] = backup;
+                conditions[i][j] = Condition::PreDetermined;
             }
         }
-
         (numbers, conditions)
     }
 
+    fn has_unique_solution(numbers: &[[u8; 9]; 9]) -> bool {
+        let mut numbers_temp = numbers.clone();
+        return GameBoard::solve_sudoku(&mut numbers_temp) && numbers_temp == *numbers;
+    }
+
+    fn solve_sudoku(numbers: &mut [[u8; 9]; 9]) -> bool {
+        let (i, j) = if let Some(empty_cell) = GameBoard::find_empty(&numbers) {
+            (empty_cell as usize / 9, empty_cell as usize % 9)
+        } else {
+            return true;
+        };
+        print!("a");
+
+        for number in 1..=9 {
+            if GameBoard::check_valid(number, i, j, &numbers) {
+                numbers[i][j] = number;
+                if GameBoard::solve_sudoku(numbers) {
+                    return true;
+                }
+                numbers[i][j] = 0;
+            }
+        }
+        false
+    }
+
+    fn find_empty(numbers: &[[u8; 9]; 9]) -> Option<u8> {
+        for i in 0..81 {
+            if numbers[i/9][i%9] == 0 {
+                return Some(i as u8);
+            }
+        }
+        None
+    } 
+
     /// true means fine, false means there is same number(s) horizontally, vertically, or in the same region
-    pub fn check(number: usize, i: usize, j: usize, numbers: &[[usize; 9]; 9]) -> Result<bool, ()> {
-        let pos_i_vertical: usize = match i {
-            0 | 3 | 6 => 0,
-            1 | 4 | 7 => 1,
-            2 | 5 | 8 => 2,
-            _ => 100,
-        };
-        let pos_i_horizontal: usize = match i {
-            0..=2 => 0,
-            3..=5 => 1,
-            6..=8 => 2,
-            _ => 100,
-        };
-        let pos_j_vertical: usize = match j {
-            0 | 3 | 6 => 0,
-            1 | 4 | 7 => 1,
-            2 | 5 | 8 => 2,
-            _ => 100,
-        };
-        let pos_j_horizontal: usize = match j {
-            0..=2 => 0,
-            3..=5 => 1,
-            6..=8 => 2,
-            _ => 100,
-        };
-
-        if pos_i_vertical == 100
-            || pos_i_horizontal == 100
-            || pos_j_vertical == 100
-            || pos_j_horizontal == 100
-        {
-            return Err(());
-        }
-
+    pub fn check_valid(number: u8, i: usize, j: usize, numbers: &[[u8; 9]; 9]) -> bool {
+        let start_i = i - i % 3;
+        let start_j = j - j % 3;
         for k in 0..9 {
-            // check same region
-            if number == numbers[i][k] && j != k {
-                return Ok(false);
+            if numbers[start_i + k / 3][start_j + k % 3] == number && !(start_i + k / 3 == i && start_j + k % 3 == j) {
+                return false;
             }
 
-            // check vertical
-            if number == numbers[k / 3 * 3 + pos_i_vertical][k % 3 * 3 + pos_j_vertical] 
-                && !(k / 3 * 3 + pos_i_vertical == i && k % 3 * 3 + pos_j_vertical == j)  
-            {
-                return Ok(false);
-            } 
+            if numbers[i][k] == number && j != k {
+                return false;
+            }
 
-            // check horizontal
-            if number == numbers[(pos_i_horizontal * 3) + (k / 3)][(pos_j_horizontal * 3) + (k % 3)] 
-                && !((pos_i_horizontal * 3) + (k / 3) == i && (pos_j_horizontal * 3) + (k % 3) == j)
-            {
-                return Ok(false);
+            if numbers[k][j] == number && i != k {
+                return false;
             }
         }
-        return Ok(true);
+        true
     }
 }
 
@@ -277,7 +276,7 @@ pub struct NumberBoard {
     mesh: Mesh,
     mesh_selection: Mesh,
     numbers: [Text; 10],
-    pub number_selection: usize,
+    pub number_selection: u8,
 }
 
 impl NumberBoard {
@@ -343,7 +342,7 @@ impl NumberBoard {
 
     pub fn draw(&mut self, canvas: &mut graphics::Canvas) -> GameResult {
         for i in 0..self.rect.len() {
-            if i == self.number_selection {
+            if i == self.number_selection as usize {
                 canvas.draw(&self.mesh_selection, Vec2::new(self.rect[i].x, self.rect[i].y));    
                 canvas.draw(
                     &self.numbers[i],
