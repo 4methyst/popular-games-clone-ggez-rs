@@ -22,6 +22,46 @@ pub struct MainState {
 
 impl MainState { 
     pub fn new(ctx: &Context) -> Self {
+        let mut buttons = BTreeMap::new();
+        buttons.insert(
+            "0_restart", 
+            Button::new(
+                &ctx, 
+                Rect::new(240., 395., 80., 20.), 
+                ggText::new(
+                    TextFragment::new("(R) Restart")
+                    .color(Color::WHITE)
+                    .scale(12.)
+                ).set_layout(graphics::TextLayout::center()).to_owned()
+            )
+        );
+        buttons.insert(
+            "1_quit", 
+            Button::new(
+                &ctx, 
+                Rect::new(400., 395., 80., 20.), 
+                ggText::new(
+                    TextFragment::new("(Esc) Quit")
+                    .color(Color::WHITE)
+                    .scale(12.)
+                ).set_layout(graphics::TextLayout::center()).to_owned()
+            )
+        );
+        let vertices = [
+            graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], uv: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], color: [0.015, 0., 0.02, 1.] },
+            graphics::Vertex { position: [SCREEN_SIZE.0, SCREEN_SIZE.1], uv: [SCREEN_SIZE.0, SCREEN_SIZE.1], color: [0.001, 0., 0.001, 1.] },
+            graphics::Vertex { position: [0., SCREEN_SIZE.1], uv: [0., SCREEN_SIZE.1], color: [0., 0., 0.01, 1.] },
+        ];
+        let indices = [0, 1, 2, 2, 1, 3, 3, 2, 4, 4, 2, 0];
+        let background = graphics::Mesh::from_data(
+            ctx, 
+            graphics::MeshData { 
+                vertices: &vertices, 
+                indices: &indices 
+            } 
+        );
 
         MainState {
             board: Board::init(&ctx),
@@ -29,8 +69,8 @@ impl MainState {
             winner: Player::None,
             text_map: Self::init_text(),
             gameover: false,
-            background: Self::init_background(&ctx),
-            buttons: Self::init_button(&ctx),
+            background,
+            buttons,
         }
     }
 
@@ -78,54 +118,6 @@ impl MainState {
         };
         text_map.insert("2_Winner", text);
         text_map
-    }
-
-    fn init_background(ctx: &Context) -> graphics::Mesh {
-        let vertices = [
-            graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], uv: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], color: [0.015, 0., 0.02, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0, SCREEN_SIZE.1], uv: [SCREEN_SIZE.0, SCREEN_SIZE.1], color: [0.001, 0., 0.001, 1.] },
-            graphics::Vertex { position: [0., SCREEN_SIZE.1], uv: [0., SCREEN_SIZE.1], color: [0., 0., 0.01, 1.] },
-        ];
-        let indices = [0, 1, 2, 2, 1, 3, 3, 2, 4, 4, 2, 0];
-        graphics::Mesh::from_data(
-            ctx, 
-            graphics::MeshData { 
-                vertices: &vertices, 
-                indices: &indices 
-            } 
-        )
-    }
-
-    fn init_button(ctx: &Context) -> BTreeMap<&'static str, Button> {
-        let mut buttons = BTreeMap::new();
-        buttons.insert(
-            "0_restart", 
-            Button::new(
-                &ctx, 
-                Rect::new(240., 395., 80., 20.), 
-                ggText::new(
-                    TextFragment::new("(R) Restart")
-                    .color(Color::WHITE)
-                    .scale(12.)
-                ).set_layout(graphics::TextLayout::center()).to_owned()
-            )
-        );
-        buttons.insert(
-            "1_quit", 
-            Button::new(
-                &ctx, 
-                Rect::new(400., 395., 80., 20.), 
-                ggText::new(
-                    TextFragment::new("(Esc) Quit")
-                    .color(Color::WHITE)
-                    .scale(12.)
-                ).set_layout(graphics::TextLayout::center()).to_owned()
-            )
-        );
-
-        buttons
     }
 
     fn state_update(&mut self) {
