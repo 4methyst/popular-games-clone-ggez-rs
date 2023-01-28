@@ -260,6 +260,8 @@ impl event::EventHandler<ggez::GameError> for MainState {
             canvas.draw(&value.text, value.pos);
         }
 
+        self.buttons.iter_mut().for_each(|(_key, button)| button.draw(&mut canvas));
+
         for (_key, button) in self.buttons.iter_mut() {
             button.draw(&mut canvas);
         } 
