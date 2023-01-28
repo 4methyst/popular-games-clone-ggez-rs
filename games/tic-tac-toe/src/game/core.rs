@@ -100,51 +100,30 @@ impl MainState {
 
     fn init_button(ctx: &Context) -> BTreeMap<&'static str, Button> {
         let mut buttons = BTreeMap::new();
-        let rect = Rect::new(240., 395., 80., 20.);
-        let mesh = graphics::Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke(
-                graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-            ),  
-            rect, 
-            Color::WHITE
-        ).unwrap();
-        let text = ggText::new(
-            TextFragment::new("(R) Restart")
-            .color(Color::WHITE)
-            .scale(12.)
-        ).set_layout(graphics::TextLayout::center()).to_owned();
-        let button = Button {
-            rect, 
-            mesh,
-            text
-        };
-        buttons.insert("0_restart", button);
-
-        let rect = Rect::new(400., 395., 80., 20.);
-        let mesh = graphics::Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke(
-                graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-            ),  
-            rect, 
-            Color::WHITE
-        ).unwrap();
-        let text = ggText::new(
-            TextFragment::new("(Esc) Quit")
-            .color(Color::WHITE)
-            .scale(12.)
-        ).set_layout(graphics::TextLayout::center()).to_owned();
-        let button = Button {
-            rect, 
-            mesh,
-            text
-        };
-        buttons.insert("1_quit", button);
+        buttons.insert(
+            "0_restart", 
+            Button::new(
+                &ctx, 
+                Rect::new(240., 395., 80., 20.), 
+                ggText::new(
+                    TextFragment::new("(R) Restart")
+                    .color(Color::WHITE)
+                    .scale(12.)
+                ).set_layout(graphics::TextLayout::center()).to_owned()
+            )
+        );
+        buttons.insert(
+            "1_quit", 
+            Button::new(
+                &ctx, 
+                Rect::new(400., 395., 80., 20.), 
+                ggText::new(
+                    TextFragment::new("(Esc) Quit")
+                    .color(Color::WHITE)
+                    .scale(12.)
+                ).set_layout(graphics::TextLayout::center()).to_owned()
+            )
+        );
 
         buttons
     }
