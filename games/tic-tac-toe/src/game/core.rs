@@ -235,6 +235,8 @@ impl MainState {
             };
         }
         self.board.sign = vec![Sign::None; GRID_SIZE.0 * GRID_SIZE.1];
+        self.text_map.get_mut("1_Turn").unwrap().text.fragments_mut()[0].text
+            = String::from("Turn: Player 1(X)");
         self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
             = String::from("");
     }
