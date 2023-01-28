@@ -254,17 +254,24 @@ impl event::EventHandler<ggez::GameError> for MainState {
         canvas.draw(&self.background, graphics::DrawParam::default());
 
         self.board.draw(&mut canvas);
+
+        self.text_map.iter_mut()
+        .for_each(|(key, val)| 
+            if !(*key == "1_Turn" && self.gameover) { 
+                canvas.draw(&val.text, val.pos)
+            }
+        );
         
-        for (key, value) in self.text_map.iter() {
-            if self.gameover && *key == "1_Turn" { continue; }
-            canvas.draw(&value.text, value.pos);
-        }
+        // for (key, value) in self.text_map.iter() {
+        //     if self.gameover && *key == "1_Turn" { continue; }
+        //     canvas.draw(&value.text, value.pos);
+        // }
 
         self.buttons.iter_mut().for_each(|(_key, button)| button.draw(&mut canvas));
 
-        for (_key, button) in self.buttons.iter_mut() {
-            button.draw(&mut canvas);
-        } 
+        // for (_key, button) in self.buttons.iter_mut() {
+        //     button.draw(&mut canvas);
+        // } 
 
         canvas.finish(ctx)?;
 
