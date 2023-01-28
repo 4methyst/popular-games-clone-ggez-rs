@@ -24,7 +24,7 @@ impl MainState {
     pub fn new(ctx: &Context) -> Self {
         let mut buttons = BTreeMap::new();
         buttons.insert(
-            "0_restart", 
+            "restart", 
             Button::new(
                 &ctx, 
                 Rect::new(240., 395., 80., 20.), 
@@ -36,7 +36,7 @@ impl MainState {
             )
         );
         buttons.insert(
-            "1_quit", 
+            "quit", 
             Button::new(
                 &ctx, 
                 Rect::new(400., 395., 80., 20.), 
@@ -88,7 +88,7 @@ impl MainState {
                 pos: Vec2 { x: 360., y: 55. }
             }
         };
-        text_map.insert("0_Title", text);
+        text_map.insert("Title", text);
 
         let text = {
             Text {
@@ -102,7 +102,7 @@ impl MainState {
                 pos: Vec2 { x: 360., y: 95. }
             }
         };
-        text_map.insert("1_Turn", text);
+        text_map.insert("Turn", text);
 
         let text = {
             Text {
@@ -116,18 +116,18 @@ impl MainState {
                 pos: Vec2 { x: 525., y: 260. }
             }
         };
-        text_map.insert("2_Winner", text);
+        text_map.insert("Winner", text);
         text_map
     }
 
     fn state_update(&mut self) {
         self.player = 
         if self.player == Player::P1 { 
-            self.text_map.get_mut("1_Turn").unwrap().text.fragments_mut()[0].text
+            self.text_map.get_mut("Turn").unwrap().text.fragments_mut()[0].text
                 = String::from("Turn: Player 2(O)");
             Player::P2 
         } else { 
-            self.text_map.get_mut("1_Turn").unwrap().text.fragments_mut()[0].text
+            self.text_map.get_mut("Turn").unwrap().text.fragments_mut()[0].text
                 = String::from("Turn: Player 1(X)");
             Player::P1 
         };
@@ -136,19 +136,19 @@ impl MainState {
         match self.winner {
             Player::None => {},
             Player::P1 => {
-                self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
+                self.text_map.get_mut("Winner").unwrap().text.fragments_mut()[0].text
                     = String::from("PLAYER 1\nWON");
                 self.gameover();
             },
             Player::P2 => {
-                self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
+                self.text_map.get_mut("Winner").unwrap().text.fragments_mut()[0].text
                     = String::from("PLAYER 2\nWON");
                 self.gameover();
             },
         }
 
         if !self.gameover && self.check_draw() {
-            self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
+            self.text_map.get_mut("Winner").unwrap().text.fragments_mut()[0].text
                     = String::from("DRAW");
             self.gameover();
         }
@@ -235,9 +235,9 @@ impl MainState {
             };
         }
         self.board.sign = vec![Sign::None; GRID_SIZE.0 * GRID_SIZE.1];
-        self.text_map.get_mut("1_Turn").unwrap().text.fragments_mut()[0].text
+        self.text_map.get_mut("Turn").unwrap().text.fragments_mut()[0].text
             = String::from("Turn: Player 1(X)");
-        self.text_map.get_mut("2_Winner").unwrap().text.fragments_mut()[0].text
+        self.text_map.get_mut("Winner").unwrap().text.fragments_mut()[0].text
             = String::from("");
     }
 }
@@ -259,7 +259,7 @@ impl event::EventHandler<ggez::GameError> for MainState {
 
         self.text_map.iter_mut()
         .for_each(|(key, val)| 
-            if !(*key == "1_Turn" && self.gameover) { 
+            if !(*key == "Turn" && self.gameover) { 
                 canvas.draw(&val.text, val.pos)
             }
         );
@@ -292,8 +292,8 @@ impl event::EventHandler<ggez::GameError> for MainState {
         for (key, button) in self.buttons.clone() {
             if button.rect.contains( Point2 { x, y } ) {
                 match key {
-                    "0_restart" => self.restart(),
-                    "1_quit" => ctx.request_quit(),
+                    "restart" => self.restart(),
+                    "quit" => ctx.request_quit(),
                     _ => (),
                 };
             };
