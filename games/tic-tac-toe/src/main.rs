@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod game;
-use game::core::{ MainState, SCREEN_SIZE };
+use game::{core::MainState, constant::SCREEN_SIZE};
 
 use ggez::{ event, GameResult };
 

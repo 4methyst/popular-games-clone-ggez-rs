@@ -2,24 +2,13 @@ use std::collections::BTreeMap;
 
 use ggez::{
     event, glam::Vec2, mint::Point2,
-    graphics::{self, Rect, DrawMode, Color, Text as ggText, TextFragment},
+    graphics::{self, Rect, Color, Text as ggText, TextFragment},
     input::keyboard::{KeyCode, KeyInput},
     input::mouse::MouseButton,
     Context, GameResult,
 };
 
-use crate::game::{entity::*, ui::*};
-
-pub const SCREEN_SIZE: (f32, f32) = (720., 480.);
-
-const DESIRED_FPS: u32 = 30;
-
-const BOARD_DIMENSION: (f32, f32) = (240., 240.);
-
-const GRID_SIZE: (usize, usize) = (3, 3);
-
-const GRID_DIMENSION: (f32, f32) = (BOARD_DIMENSION.0 / GRID_SIZE.0 as f32, BOARD_DIMENSION.1 / GRID_SIZE.1 as f32);
-
+use crate::game::{entity::*, ui::*, constant::*};
 
 pub struct MainState {
     board: Board,
@@ -35,79 +24,13 @@ impl MainState {
     pub fn new(ctx: &Context) -> Self {
 
         MainState {
-            board: Self::init_board(&ctx),
+            board: Board::init(&ctx),
             player: Player::P1,
             winner: Player::None,
             text_map: Self::init_text(),
             gameover: false,
             background: Self::init_background(&ctx),
             buttons: Self::init_button(&ctx),
-        }
-    }
-
-    fn init_board(ctx: &Context) -> Board {
-        
-        let mut rect = vec![Rect::default(); GRID_SIZE.0 * GRID_SIZE.1];
-        for i in 0..GRID_SIZE.0 * GRID_SIZE.1 {
-            rect[i] = Rect {
-                x: 240. + (i % GRID_SIZE.0) as f32 * GRID_DIMENSION.0,
-                y: 135. + (i / GRID_SIZE.0) as f32 * GRID_DIMENSION.1,
-                w: GRID_DIMENSION.0,
-                h: GRID_DIMENSION.1,
-            };
-        }
-        let grid = graphics::Mesh::new_rectangle(
-            ctx, DrawMode::Stroke( 
-                graphics::StrokeOptions::default()
-                .with_line_width(4.)
-                .with_line_cap(graphics::LineCap::Square)
-                .with_line_join(graphics::LineJoin::Bevel)
-            ),
-            Rect {
-                x: 0.,
-                y: 0.,
-                w: GRID_DIMENSION.0,
-                h: GRID_DIMENSION.1,
-            }, Color::WHITE).unwrap();
-        
-        let sign = vec![Sign::None; GRID_SIZE.0 * GRID_SIZE.1];
-        let mut sign_x = Vec::new();
-        for j in 0..4 {
-            let points = [
-                Point2 { x: 0., y: 0. },
-                Point2 {
-                    x: 0. + (45. + 90. * j as f32).to_radians().cos() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-                    y: 0. + (45. + 90. * j as f32).to_radians().sin() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-                }
-            ];
-            sign_x.push(graphics::Mesh::new_line(ctx, &points, 4., Color::WHITE).unwrap());
-        }
-        let sign_x: [graphics::Mesh; 4] = [
-            sign_x[0].clone(),
-            sign_x[1].clone(),
-            sign_x[2].clone(),
-            sign_x[3].clone(),
-        ];
-        let sign_o = [
-            graphics::Mesh::new_circle(
-                ctx, 
-                DrawMode::Stroke(
-                    graphics::StrokeOptions::default()
-                    .with_line_width(4.)
-                ), 
-                Point2 { x: 0., y: 0. }, 
-                (GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 * 3. / 16., 
-                0.1, 
-                Color::WHITE,
-            ).unwrap()
-        ];
-
-        Board {
-            rect,
-            sign,
-            grid,
-            sign_x,
-            sign_o,
         }
     }
 
