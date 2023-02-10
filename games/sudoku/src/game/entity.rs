@@ -206,7 +206,7 @@ impl GameBoard {
         GameBoard::solve_sudoku(&mut numbers);
         let mut conditions = [[Condition::PreDetermined; 9]; 9];
         let number_remove: usize = match difficulty {
-            Difficulty::None => 0,
+            Difficulty::None => 81,
             Difficulty::Easy => 45,
             Difficulty::Intermediate => 54,
             Difficulty::Hard => 63,
