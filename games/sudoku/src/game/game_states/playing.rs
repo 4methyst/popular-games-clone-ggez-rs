@@ -59,7 +59,7 @@ impl Playing {
         
         Playing {
             game_board: GameBoard::init(&ctx, 180., 60., &addon_ctx.difficulty.unwrap()),
-            number_board: NumberBoard::init(&ctx),
+            number_board: NumberBoard::init(&ctx, 60., 60.),
             back_button,
             background,
             number_selection: 0,
