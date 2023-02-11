@@ -298,12 +298,12 @@ pub struct NumberBoard {
 }
 
 impl NumberBoard {
-    pub fn init(ctx: &Context) -> Self {
+    pub fn init(ctx: &Context, x: f32, y: f32) -> Self {
         let mut rect = [Rect::default(); 10];
         for i in 0..10 {
             rect[i] = Rect::new(
-                60. + (i%2) as f32 * GRID_DIMENSION.0, 
-                60. + (i/2) as f32 * GRID_DIMENSION.1, 
+                x + (i%2) as f32 * GRID_DIMENSION.0, 
+                y + (i/2) as f32 * GRID_DIMENSION.1, 
                 GRID_DIMENSION.0, 
                 GRID_DIMENSION.1,
             );
