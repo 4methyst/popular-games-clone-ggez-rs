@@ -79,4 +79,12 @@
             nanos: 868063200,
         ),
     ),
+    Score(
+        name: "Something",
+        difficulty: Easy,
+        time: Duration(
+            secs: 890,
+            nanos: 69377800,
+        ),
+    ),
 ]
