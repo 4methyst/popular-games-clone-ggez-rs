@@ -1,34 +1,21 @@
-use ggez::{
-    event, Context, GameResult,
-    mint::Point2,
-    graphics,
-};
+use ggez::{event, graphics, mint::Point2, Context, GameResult};
 
 // use crate::game::entity::*;
 use crate::game::{
-    game_states::{
-        *, 
-        main_menu::MainMenu,
-        playing::Playing,
-        select_difficulty::SelectDifficulty,
-        leader_board::LeaderBoard,
-    },
     constants::*,
     context,
+    game_states::{
+        leader_board::LeaderBoard, main_menu::MainMenu, playing::Playing,
+        select_difficulty::SelectDifficulty, *,
+    },
 };
 
 pub fn run() {
-    let (ctx, events_loop) = 
-        ggez::ContextBuilder::new(
-            "Sudoku", 
-            "alimulap")
-        .window_setup(
-            ggez::conf::WindowSetup::default()
-            .title("Sudoku"))
-        .window_mode(
-            ggez::conf::WindowMode::default()
-            .dimensions(SCREEN_SIZE.0, SCREEN_SIZE.1))
-        .build().unwrap();
+    let (ctx, events_loop) = ggez::ContextBuilder::new("Sudoku", "alimulap")
+        .window_setup(ggez::conf::WindowSetup::default().title("Sudoku"))
+        .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_SIZE.0, SCREEN_SIZE.1))
+        .build()
+        .unwrap();
 
     let state = App::new(&ctx, GameState::MainMenu);
     event::run(ctx, events_loop, state);
@@ -74,14 +61,22 @@ impl event::EventHandler for App {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
+        let mut canvas =
+            graphics::Canvas::from_frame(ctx, graphics::Color::from([0.0, 0.0, 0.0, 1.0]));
         self.current_state.draw(ctx, &mut canvas)?;
         canvas.finish(ctx)?;
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, ctx: &mut Context, button: event::MouseButton, x: f32, y: f32) -> GameResult {
-        self.current_state.mouse_button_down_event(ctx, &button, &Point2 { x, y })?;
+    fn mouse_button_down_event(
+        &mut self,
+        ctx: &mut Context,
+        button: event::MouseButton,
+        x: f32,
+        y: f32,
+    ) -> GameResult {
+        self.current_state
+            .mouse_button_down_event(ctx, &button, &Point2 { x, y })?;
         Ok(())
     }
 }

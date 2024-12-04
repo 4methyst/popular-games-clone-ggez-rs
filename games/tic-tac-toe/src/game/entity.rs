@@ -1,4 +1,9 @@
-use ggez::{ Context, mint::Point2, glam::Vec2, graphics::{self, Mesh, Rect, Color, Canvas, DrawMode } };
+use ggez::{
+    glam::Vec2,
+    graphics::{self, Canvas, Color, DrawMode, Mesh, Rect},
+    mint::Point2,
+    Context,
+};
 
 use crate::game::constant::*;
 
@@ -36,28 +41,36 @@ impl Board {
             };
         }
         let grid = graphics::Mesh::new_rectangle(
-            ctx, DrawMode::Stroke( 
+            ctx,
+            DrawMode::Stroke(
                 graphics::StrokeOptions::default()
-                .with_line_width(4.)
-                .with_line_cap(graphics::LineCap::Square)
-                .with_line_join(graphics::LineJoin::Bevel)
+                    .with_line_width(4.)
+                    .with_line_cap(graphics::LineCap::Square)
+                    .with_line_join(graphics::LineJoin::Bevel),
             ),
             Rect {
                 x: 0.,
                 y: 0.,
                 w: GRID_DIMENSION.0,
                 h: GRID_DIMENSION.1,
-            }, Color::WHITE).unwrap();
-        
+            },
+            Color::WHITE,
+        )
+        .unwrap();
+
         let sign = vec![Sign::None; GRID_SIZE.0 * GRID_SIZE.1];
         let mut sign_x = Vec::new();
         for j in 0..4 {
             let points = [
                 Point2 { x: 0., y: 0. },
                 Point2 {
-                    x: 0. + (45. + 90. * j as f32).to_radians().cos() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-                    y: 0. + (45. + 90. * j as f32).to_radians().sin() * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
-                }
+                    x: 0.
+                        + (45. + 90. * j as f32).to_radians().cos()
+                            * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
+                    y: 0.
+                        + (45. + 90. * j as f32).to_radians().sin()
+                            * ((GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 / 4.),
+                },
             ];
             sign_x.push(graphics::Mesh::new_line(ctx, &points, 4., Color::WHITE).unwrap());
         }
@@ -67,19 +80,15 @@ impl Board {
             sign_x[2].clone(),
             sign_x[3].clone(),
         ];
-        let sign_o = [
-            graphics::Mesh::new_circle(
-                ctx, 
-                DrawMode::Stroke(
-                    graphics::StrokeOptions::default()
-                    .with_line_width(4.)
-                ), 
-                Point2 { x: 0., y: 0. }, 
-                (GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 * 3. / 16., 
-                0.1, 
-                Color::WHITE,
-            ).unwrap()
-        ];
+        let sign_o = [graphics::Mesh::new_circle(
+            ctx,
+            DrawMode::Stroke(graphics::StrokeOptions::default().with_line_width(4.)),
+            Point2 { x: 0., y: 0. },
+            (GRID_DIMENSION.0 + GRID_DIMENSION.1) as f32 * 3. / 16.,
+            0.1,
+            Color::WHITE,
+        )
+        .unwrap()];
 
         Board {
             rect,
@@ -97,24 +106,24 @@ impl Board {
                 Sign::X => {
                     for j in 0..4 {
                         canvas.draw(
-                            &self.sign_x[j], 
+                            &self.sign_x[j],
                             Vec2::new(
-                                self.rect[i].w/2. + self.rect[i].x,
-                                self.rect[i].h/2. + self.rect[i].y
-                            )
+                                self.rect[i].w / 2. + self.rect[i].x,
+                                self.rect[i].h / 2. + self.rect[i].y,
+                            ),
                         );
                     }
-                },
+                }
                 Sign::O => {
                     canvas.draw(
-                        &self.sign_o[0], 
+                        &self.sign_o[0],
                         Vec2::new(
-                            self.rect[i].w/2. + self.rect[i].x,
-                            self.rect[i].h/2. + self.rect[i].y
-                        )
+                            self.rect[i].w / 2. + self.rect[i].x,
+                            self.rect[i].h / 2. + self.rect[i].y,
+                        ),
                     );
-                },
-                Sign::None => {},
+                }
+                Sign::None => {}
             }
         }
     }

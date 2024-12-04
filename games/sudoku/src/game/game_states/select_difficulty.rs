@@ -2,16 +2,11 @@ use std::collections::BTreeMap;
 
 use ggez::{
     glam::Vec2,
-    GameResult, Context,
-    graphics::{ self, Text, Rect, Color },
+    graphics::{self, Color, Rect, Text},
+    Context, GameResult,
 };
 
-use crate::game::{
-    ui::*,
-    constants::*,
-    game_states::*,
-    entity::Difficulty,
-};
+use crate::game::{constants::*, entity::Difficulty, game_states::*, ui::*};
 
 pub struct SelectDifficulty {
     texts: BTreeMap<&'static str, Text>,
@@ -25,24 +20,24 @@ impl SelectDifficulty {
     pub fn new(ctx: &Context) -> Self {
         let mut texts = BTreeMap::new();
         texts.insert(
-            "0_Title", 
+            "0_Title",
             Text::new(
                 graphics::TextFragment::new("Select Difficulty")
-                .color(Color::WHITE)
-                .scale(40.)
+                    .color(Color::WHITE)
+                    .scale(40.),
             )
             .set_layout(graphics::TextLayout::center())
-            .to_owned()
+            .to_owned(),
         );
         texts.insert(
-            "1_Author", 
+            "1_Author",
             Text::new(
                 graphics::TextFragment::new("Made by alimulap")
-                .color(Color::WHITE)
-                .scale(15.)
+                    .color(Color::WHITE)
+                    .scale(15.),
             )
             .set_layout(graphics::TextLayout::center())
-            .to_owned()
+            .to_owned(),
         );
         let mut buttons = BTreeMap::new();
         buttons.insert(
@@ -52,12 +47,12 @@ impl SelectDifficulty {
                 Rect::new(290., 200., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("None")
-                    .color(Color::WHITE)
-                    .scale(18.)
+                        .color(Color::WHITE)
+                        .scale(18.),
                 )
                 .set_layout(graphics::TextLayout::center())
-                .to_owned()
-            )
+                .to_owned(),
+            ),
         );
         buttons.insert(
             "1_Easy",
@@ -66,12 +61,12 @@ impl SelectDifficulty {
                 Rect::new(290., 240., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Easy")
-                    .color(Color::WHITE)
-                    .scale(18.)
+                        .color(Color::WHITE)
+                        .scale(18.),
                 )
                 .set_layout(graphics::TextLayout::center())
-                .to_owned()
-            )
+                .to_owned(),
+            ),
         );
         buttons.insert(
             "2_Intermediate",
@@ -80,12 +75,12 @@ impl SelectDifficulty {
                 Rect::new(290., 280., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Intermediate")
-                    .color(Color::WHITE)
-                    .scale(18.)
+                        .color(Color::WHITE)
+                        .scale(18.),
                 )
                 .set_layout(graphics::TextLayout::center())
-                .to_owned()
-            )
+                .to_owned(),
+            ),
         );
         buttons.insert(
             "3_Hard",
@@ -94,12 +89,12 @@ impl SelectDifficulty {
                 Rect::new(290., 320., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Hard")
-                    .color(Color::WHITE)
-                    .scale(18.)
+                        .color(Color::WHITE)
+                        .scale(18.),
                 )
                 .set_layout(graphics::TextLayout::center())
-                .to_owned()
-            )
+                .to_owned(),
+            ),
         );
         buttons.insert(
             "4_Back",
@@ -108,25 +103,48 @@ impl SelectDifficulty {
                 Rect::new(290., 360., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Back")
-                    .color(Color::WHITE)
-                    .scale(18.)
+                        .color(Color::WHITE)
+                        .scale(18.),
                 )
                 .set_layout(graphics::TextLayout::center())
-                .to_owned()
-            )
+                .to_owned(),
+            ),
         );
         let vertices = [
-            graphics::Vertex { position: [0., 0.], uv: [0., 0.], color: [0.001, 0., 0.001, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0, 0.], uv: [SCREEN_SIZE.0, 0.], color: [0., 0., 0.01, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], uv: [SCREEN_SIZE.0/2., SCREEN_SIZE.1/2.], color: [0.015, 0., 0.02, 1.] },
-            graphics::Vertex { position: [SCREEN_SIZE.0, SCREEN_SIZE.1], uv: [SCREEN_SIZE.0, SCREEN_SIZE.1], color: [0.001, 0., 0.001, 1.] },
-            graphics::Vertex { position: [0., SCREEN_SIZE.1], uv: [0., SCREEN_SIZE.1], color: [0., 0., 0.01, 1.] },
+            graphics::Vertex {
+                position: [0., 0.],
+                uv: [0., 0.],
+                color: [0.001, 0., 0.001, 1.],
+            },
+            graphics::Vertex {
+                position: [SCREEN_SIZE.0, 0.],
+                uv: [SCREEN_SIZE.0, 0.],
+                color: [0., 0., 0.01, 1.],
+            },
+            graphics::Vertex {
+                position: [SCREEN_SIZE.0 / 2., SCREEN_SIZE.1 / 2.],
+                uv: [SCREEN_SIZE.0 / 2., SCREEN_SIZE.1 / 2.],
+                color: [0.015, 0., 0.02, 1.],
+            },
+            graphics::Vertex {
+                position: [SCREEN_SIZE.0, SCREEN_SIZE.1],
+                uv: [SCREEN_SIZE.0, SCREEN_SIZE.1],
+                color: [0.001, 0., 0.001, 1.],
+            },
+            graphics::Vertex {
+                position: [0., SCREEN_SIZE.1],
+                uv: [0., SCREEN_SIZE.1],
+                color: [0., 0., 0.01, 1.],
+            },
         ];
         let indices = [0, 1, 2, 2, 1, 3, 3, 2, 4, 4, 2, 0];
-        let background = graphics::Mesh::from_data(ctx, graphics::MeshData {
-            vertices: &vertices,
-            indices: &indices,
-        });
+        let background = graphics::Mesh::from_data(
+            ctx,
+            graphics::MeshData {
+                vertices: &vertices,
+                indices: &indices,
+            },
+        );
         SelectDifficulty {
             texts,
             buttons,
@@ -138,7 +156,11 @@ impl SelectDifficulty {
 }
 
 impl StateTrait for SelectDifficulty {
-    fn update(&mut self, _ctx: &Context, addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
+    fn update(
+        &mut self,
+        _ctx: &Context,
+        addon_ctx: &mut AddOnContext,
+    ) -> GameResult<Option<GameState>> {
         if let Some(new_state) = self.change_state {
             self.change_state = None;
             addon_ctx.difficulty = self.selected_difficulty;
@@ -148,7 +170,6 @@ impl StateTrait for SelectDifficulty {
     }
 
     fn draw(&mut self, _ctx: &mut Context, canvas: &mut graphics::Canvas) -> GameResult {
-
         canvas.draw(&self.background, graphics::DrawParam::default());
 
         for (_key, button) in self.buttons.iter_mut() {
@@ -166,29 +187,34 @@ impl StateTrait for SelectDifficulty {
         Ok(())
     }
 
-    fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: &MouseButton, point: &Point2<f32>) -> GameResult {
+    fn mouse_button_down_event(
+        &mut self,
+        _ctx: &mut Context,
+        button: &MouseButton,
+        point: &Point2<f32>,
+    ) -> GameResult {
         for (key, buttonui) in self.buttons.iter_mut() {
             if buttonui.rect.contains(*point) && *button == MouseButton::Left {
                 match *key {
                     "0_None" => {
                         self.selected_difficulty = Some(Difficulty::None);
                         self.change_state = Some(GameState::Playing);
-                    },
+                    }
                     "1_Easy" => {
                         self.selected_difficulty = Some(Difficulty::Easy);
                         self.change_state = Some(GameState::Playing);
-                    },
+                    }
                     "2_Intermediate" => {
                         self.selected_difficulty = Some(Difficulty::Intermediate);
                         self.change_state = Some(GameState::Playing);
-                    },
+                    }
                     "3_Hard" => {
                         self.selected_difficulty = Some(Difficulty::Hard);
                         self.change_state = Some(GameState::Playing);
-                    },
+                    }
                     "4_Back" => {
                         self.change_state = Some(GameState::MainMenu);
-                    },
+                    }
                     _ => (),
                 }
             }

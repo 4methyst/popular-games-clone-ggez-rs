@@ -5,9 +5,7 @@ pub struct AddOnContext {
 
 impl AddOnContext {
     pub fn new() -> Self {
-        AddOnContext {
-            difficulty: None,
-        }
+        AddOnContext { difficulty: None }
     }
 
     pub fn new_forced() -> Self {
