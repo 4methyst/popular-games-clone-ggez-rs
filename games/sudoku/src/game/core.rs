@@ -42,10 +42,10 @@ struct App {
 impl App {
     fn new(ctx: &Context, initial_state: GameState) -> Self {
         let current_state: Box<dyn StateTrait> = match initial_state {
-            GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
-            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
-            GameState::Playing => Box::new(Playing::new(&ctx, &context::AddOnContext::new_forced())),
-            GameState::LeaderBoard => Box::new(LeaderBoard::new(&ctx)),
+            GameState::MainMenu => Box::new(MainMenu::new(ctx)),
+            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(ctx)),
+            GameState::Playing => Box::new(Playing::new(ctx, &context::AddOnContext::new_forced())),
+            GameState::LeaderBoard => Box::new(LeaderBoard::new(ctx)),
         };
         App {
             current_state,
@@ -55,10 +55,10 @@ impl App {
 
     fn change_state(&mut self, ctx: &Context, new_state: GameState) {
         let new_state: Box<dyn StateTrait> = match new_state {
-            GameState::MainMenu => Box::new(MainMenu::new(&ctx)),
-            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(&ctx)),
-            GameState::Playing => Box::new(Playing::new(&ctx, &self.addon_ctx)),
-            GameState::LeaderBoard => Box::new(LeaderBoard::new(&ctx)),
+            GameState::MainMenu => Box::new(MainMenu::new(ctx)),
+            GameState::SelectDifficulty => Box::new(SelectDifficulty::new(ctx)),
+            GameState::Playing => Box::new(Playing::new(ctx, &self.addon_ctx)),
+            GameState::LeaderBoard => Box::new(LeaderBoard::new(ctx)),
         };
         let old_state = std::mem::replace(&mut self.current_state, new_state);
         std::mem::drop(old_state);
@@ -67,8 +67,8 @@ impl App {
 
 impl event::EventHandler for App {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        if let Some(new_state) = self.current_state.update(&ctx, &mut self.addon_ctx)? {
-            self.change_state(&ctx, new_state);
+        if let Some(new_state) = self.current_state.update(ctx, &mut self.addon_ctx)? {
+            self.change_state(ctx, new_state);
         }
         Ok(())
     }

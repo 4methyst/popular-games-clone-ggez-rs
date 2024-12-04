@@ -58,7 +58,7 @@ impl LeaderBoard {
             indices: &indices,
         });
         let back_button = Button::new(
-            &ctx,
+            ctx,
             graphics::Rect::new(30., 420., 80., 30.),
             graphics::Text::new(
                 graphics::TextFragment::new("Back")

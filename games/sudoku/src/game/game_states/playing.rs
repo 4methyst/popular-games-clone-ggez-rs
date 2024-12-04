@@ -43,7 +43,7 @@ impl Playing {
         });
 
         let back_button = Button::new(
-            &ctx,
+            ctx,
             graphics::Rect::new(60., 390., 80., 30.),
             graphics::Text::new(
                 graphics::TextFragment::new("Back")
@@ -58,8 +58,8 @@ impl Playing {
         let scores: Vec<Score> = de::from_str(&serialized).unwrap();
         
         Playing {
-            game_board: GameBoard::init(&ctx, 180., 60., &addon_ctx.difficulty.unwrap()),
-            number_board: NumberBoard::init(&ctx, 60., 60.),
+            game_board: GameBoard::init(ctx, 180., 60., &addon_ctx.difficulty.unwrap()),
+            number_board: NumberBoard::init(ctx, 60., 60.),
             back_button,
             background,
             number_selection: 0,
@@ -88,11 +88,9 @@ impl Playing {
                     self.game_board.number_state[i][j] = Condition::Neutral;
                 }
 
-                if gameover {
-                    if self.game_board.number_state[i][j] == Condition::Wrong || self.game_board.numbers[i][j] == 0 {
+                if gameover && self.game_board.number_state[i][j] == Condition::Wrong || self.game_board.numbers[i][j] == 0 {
                         gameover = false;
                     }
-                }
             }
         }
         if gameover { self.gameover(); }

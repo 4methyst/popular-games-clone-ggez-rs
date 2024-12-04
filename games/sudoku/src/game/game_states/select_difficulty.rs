@@ -48,7 +48,7 @@ impl SelectDifficulty {
         buttons.insert(
             "0_None",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(290., 200., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("None")
@@ -62,7 +62,7 @@ impl SelectDifficulty {
         buttons.insert(
             "1_Easy",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(290., 240., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Easy")
@@ -76,7 +76,7 @@ impl SelectDifficulty {
         buttons.insert(
             "2_Intermediate",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(290., 280., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Intermediate")
@@ -90,7 +90,7 @@ impl SelectDifficulty {
         buttons.insert(
             "3_Hard",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(290., 320., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Hard")
@@ -104,7 +104,7 @@ impl SelectDifficulty {
         buttons.insert(
             "4_Back",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(290., 360., 140., 30.),
                 Text::new(
                     graphics::TextFragment::new("Back")
@@ -139,7 +139,7 @@ impl SelectDifficulty {
 
 impl StateTrait for SelectDifficulty {
     fn update(&mut self, _ctx: &Context, addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
-        if let Some(new_state) = self.change_state.clone() {
+        if let Some(new_state) = self.change_state {
             self.change_state = None;
             addon_ctx.difficulty = self.selected_difficulty;
             return Ok(Some(new_state));

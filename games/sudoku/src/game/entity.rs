@@ -1,10 +1,10 @@
 use ggez::{
     glam::Vec2,
-    Context, GameResult, 
-    graphics::{ self, Mesh, Rect, Text, TextFragment }
+    graphics::{self, Mesh, Rect, Text, TextFragment},
+    Context, GameResult,
 };
+use serde::{Deserialize, Serialize};
 use std::time::Duration;
-use serde::{Serialize, Deserialize};
 
 const GRID_DIMENSION: (f32, f32) = (40., 40.);
 
@@ -23,9 +23,9 @@ pub enum Difficulty {
     Hard,
 }
 
-impl Into<TextFragment> for Difficulty {
-    fn into(self) -> TextFragment {
-        match self {
+impl From<Difficulty> for TextFragment {
+    fn from(value: Difficulty) -> Self {
+        match value {
             Difficulty::None => TextFragment::new("None"),
             Difficulty::Easy => TextFragment::new("Easy"),
             Difficulty::Intermediate => TextFragment::new("Intermediate"),
@@ -42,10 +42,10 @@ pub struct Score {
 }
 
 impl Score {
-    pub fn new(name: &str, difficulty: Difficulty, time: Duration) -> Self{
+    pub fn new(name: &str, difficulty: Difficulty, time: Duration) -> Self {
         Score {
-            name: String::from(name), 
-            difficulty, 
+            name: String::from(name),
+            difficulty,
             time,
         }
     }
@@ -64,81 +64,90 @@ pub struct GameBoard {
 
 impl GameBoard {
     pub fn init(ctx: &Context, x: f32, y: f32, difficulty: &Difficulty) -> GameBoard {
-        let mut grid_rect = [[Rect::default(); 9]; 9];
-        for i in 0..9 {
-            for j in 0..9 {
-                grid_rect[i][j] = Rect::new(
-                    x + (j as f32 * GRID_DIMENSION.0),
-                    y + (i as f32 * GRID_DIMENSION.1),
-                    GRID_DIMENSION.0,
-                    GRID_DIMENSION.1
-                );
-            }
-        }
+        let grid_rect = (0..9)
+            .map(|i| {
+                (0..9)
+                    .map(|j| {
+                        Rect::new(
+                            x + (j as f32 * GRID_DIMENSION.0),
+                            y + (i as f32 * GRID_DIMENSION.1),
+                            GRID_DIMENSION.0,
+                            GRID_DIMENSION.1,
+                        )
+                    })
+                    .collect::<Vec<Rect>>()
+                    .try_into()
+                    .unwrap()
+            })
+            .collect::<Vec<[Rect; 9]>>()
+            .try_into()
+            .unwrap();
         let grid_mesh = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
+            ctx,
+            graphics::DrawMode::Stroke(
                 graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
+                    .with_line_width(1.)
+                    .with_line_join(graphics::LineJoin::Bevel),
+            ),
             Rect {
                 x: 0.,
                 y: 0.,
                 w: GRID_DIMENSION.0,
                 h: GRID_DIMENSION.1,
-            }, 
+            },
             graphics::Color::WHITE,
-        ).unwrap();
+        )
+        .unwrap();
         let grid_mesh_selection = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
+            ctx,
+            graphics::DrawMode::Stroke(
                 graphics::StrokeOptions::default()
-                .with_line_width(2.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
+                    .with_line_width(2.)
+                    .with_line_join(graphics::LineJoin::Bevel),
+            ),
             Rect {
                 x: 0.,
                 y: 0.,
                 w: GRID_DIMENSION.0,
                 h: GRID_DIMENSION.1,
-            }, 
+            },
             graphics::Color::WHITE,
-        ).unwrap();
+        )
+        .unwrap();
         let region_mesh = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
+            ctx,
+            graphics::DrawMode::Stroke(
                 graphics::StrokeOptions::default()
-                .with_line_width(2.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
+                    .with_line_width(2.)
+                    .with_line_join(graphics::LineJoin::Bevel),
+            ),
             Rect {
                 x: 0.,
                 y: 0.,
                 w: GRID_DIMENSION.0 * 3.,
                 h: GRID_DIMENSION.1 * 3.,
-            }, 
+            },
             graphics::Color::WHITE,
-        ).unwrap();
+        )
+        .unwrap();
 
         let (numbers, number_state) = GameBoard::generate_sudoku(difficulty);
 
-        let mut number_draw: [Text; 10] = Default::default();
-
-        number_draw[0] = Text::new(
-            graphics::TextFragment::new("")
-            .scale(0.)
-        )
-        .set_layout(graphics::TextLayout::center()).to_owned();
-
-        for i in 1..10 {
-            let number = i.to_string();
-            number_draw[i] = Text::new(
-                graphics::TextFragment::new(number)
-                .scale(17.)
-            )
-            .set_layout(graphics::TextLayout::center()).to_owned();
-        }
+        let number_draw = (0..10)
+            .map(|i| {
+                if i == 0 {
+                    Text::new(graphics::TextFragment::new("").scale(17.))
+                        .set_layout(graphics::TextLayout::center())
+                        .to_owned()
+                } else {
+                    Text::new(graphics::TextFragment::new(i.to_string()).scale(17.))
+                        .set_layout(graphics::TextLayout::center())
+                        .to_owned()
+                }
+            })
+            .collect::<Vec<Text>>()
+            .try_into()
+            .unwrap();
 
         GameBoard {
             grid_rect,
@@ -152,56 +161,57 @@ impl GameBoard {
         }
     }
 
-    pub fn draw (&mut self, canvas: &mut graphics::Canvas) -> GameResult {
+    pub fn draw(&mut self, canvas: &mut graphics::Canvas) -> GameResult {
         for i in 0..9 {
             canvas.draw(
-                &self.region_mesh, 
+                &self.region_mesh,
                 graphics::DrawParam::default()
                     .dest(Vec2::new(
-                    180. + (i%3) as f32 * (GRID_DIMENSION.0 * 3.),
-                    60. + (i/3) as f32 * (GRID_DIMENSION.1 * 3.),
-                ))
-                .z(4)
+                        180. + (i % 3) as f32 * (GRID_DIMENSION.0 * 3.),
+                        60. + (i / 3) as f32 * (GRID_DIMENSION.1 * 3.),
+                    ))
+                    .z(4),
             );
             for j in 0..9 {
                 let (index, color) = match self.number_state[i][j] {
-                    Condition::PreDetermined => (2, graphics::Color::new(0.8,0.8,0.3,1.0)),
+                    Condition::PreDetermined => (2, graphics::Color::new(0.8, 0.8, 0.3, 1.0)),
                     Condition::Neutral => (1, graphics::Color::WHITE),
                     Condition::Wrong => (3, graphics::Color::RED),
                 };
 
-                if self.numbers[i][j] == self.number_selected
-                    && self.numbers[i][j] != 0 {
+                if self.numbers[i][j] == self.number_selected && self.numbers[i][j] != 0 {
                     canvas.draw(
                         &self.grid_mesh_selection,
                         graphics::DrawParam::default()
-                        .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
-                        .z(5).color(graphics::Color::CYAN)
+                            .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
+                            .z(5)
+                            .color(graphics::Color::CYAN),
                     );
-                } else {  
+                } else {
                     canvas.draw(
                         &self.grid_mesh,
                         graphics::DrawParam::default()
-                        .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
-                        .z(index).color(color)
+                            .dest(Vec2::new(self.grid_rect[i][j].x, self.grid_rect[i][j].y))
+                            .z(index)
+                            .color(color),
                     );
                 }
 
                 canvas.draw(
                     &self.number_draw[self.numbers[i][j] as usize],
                     graphics::DrawParam::default()
-                    .dest(Vec2::new(
-                        self.grid_rect[i][j].x + GRID_DIMENSION.0 / 2.,
-                        self.grid_rect[i][j].y + GRID_DIMENSION.1 / 2.,
-                    ))
-                    .color(color)
+                        .dest(Vec2::new(
+                            self.grid_rect[i][j].x + GRID_DIMENSION.0 / 2.,
+                            self.grid_rect[i][j].y + GRID_DIMENSION.1 / 2.,
+                        ))
+                        .color(color),
                 );
             }
         }
         Ok(())
     }
 
-    fn generate_sudoku(difficulty: &Difficulty) -> ([[u8; 9]; 9],[[Condition; 9]; 9]) {
+    fn generate_sudoku(difficulty: &Difficulty) -> ([[u8; 9]; 9], [[Condition; 9]; 9]) {
         let mut numbers = [[0u8; 9]; 9];
         GameBoard::solve_sudoku(&mut numbers);
         let mut conditions = [[Condition::PreDetermined; 9]; 9];
@@ -216,7 +226,7 @@ impl GameBoard {
         while number_removed.len() < number_remove {
             let (i, j): (usize, usize) = {
                 let rand = rand::random::<usize>() % 81;
-                (rand/9,rand%9)
+                (rand / 9, rand % 9)
             };
             if numbers[i][j] == 0 {
                 continue;
@@ -235,20 +245,20 @@ impl GameBoard {
     }
 
     fn has_unique_solution(numbers: &[[u8; 9]; 9]) -> bool {
-        let mut numbers_temp = numbers.clone();
-        return GameBoard::solve_sudoku(&mut numbers_temp) && numbers_temp == *numbers;
+        let mut numbers_temp = *numbers;
+        GameBoard::solve_sudoku(&mut numbers_temp) && numbers_temp == *numbers
     }
 
     fn solve_sudoku(numbers: &mut [[u8; 9]; 9]) -> bool {
-        let (i, j) = if let Some(empty_cell) = GameBoard::find_empty(&numbers) {
+        let (i, j) = if let Some(empty_cell) = GameBoard::find_empty(numbers) {
             (empty_cell as usize / 9, empty_cell as usize % 9)
         } else {
             return true;
         };
-        print!("a");
+        //print!("a");
 
         for number in 1..=9 {
-            if GameBoard::check_valid(number, i, j, &numbers) {
+            if GameBoard::check_valid(number, i, j, numbers) {
                 numbers[i][j] = number;
                 if GameBoard::solve_sudoku(numbers) {
                     return true;
@@ -261,19 +271,21 @@ impl GameBoard {
 
     fn find_empty(numbers: &[[u8; 9]; 9]) -> Option<u8> {
         for i in 0..81 {
-            if numbers[i/9][i%9] == 0 {
+            if numbers[i / 9][i % 9] == 0 {
                 return Some(i as u8);
             }
         }
         None
-    } 
+    }
 
     /// true means fine, false means there is same number(s) horizontally, vertically, or in the same region
     pub fn check_valid(number: u8, i: usize, j: usize, numbers: &[[u8; 9]; 9]) -> bool {
         let start_i = i - i % 3;
         let start_j = j - j % 3;
         for k in 0..9 {
-            if numbers[start_i + k / 3][start_j + k % 3] == number && !(start_i + k / 3 == i && start_j + k % 3 == j) {
+            if numbers[start_i + k / 3][start_j + k % 3] == number
+                && !(start_i + k / 3 == i && start_j + k % 3 == j)
+            {
                 return false;
             }
 
@@ -299,91 +311,96 @@ pub struct NumberBoard {
 
 impl NumberBoard {
     pub fn init(ctx: &Context, x: f32, y: f32) -> Self {
-        let mut rect = [Rect::default(); 10];
-        for i in 0..10 {
-            rect[i] = Rect::new(
-                x + (i%2) as f32 * GRID_DIMENSION.0, 
-                y + (i/2) as f32 * GRID_DIMENSION.1, 
-                GRID_DIMENSION.0, 
-                GRID_DIMENSION.1,
-            );
-        }
+        let rect = (0..10)
+            .map(|i| {
+                Rect::new(
+                    x + (i % 2) as f32 * GRID_DIMENSION.0,
+                    y + (i / 2) as f32 * GRID_DIMENSION.1,
+                    GRID_DIMENSION.0,
+                    GRID_DIMENSION.1,
+                )
+            })
+            .collect::<Vec<Rect>>()
+            .try_into()
+            .unwrap();
 
         let mesh = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
+            ctx,
+            graphics::DrawMode::Stroke(
                 graphics::StrokeOptions::default()
-                .with_line_width(1.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
-            Rect::new(
-                0.,
-                0.,
-                GRID_DIMENSION.0,
-                GRID_DIMENSION.1,
-            ), 
+                    .with_line_width(1.)
+                    .with_line_join(graphics::LineJoin::Bevel),
+            ),
+            Rect::new(0., 0., GRID_DIMENSION.0, GRID_DIMENSION.1),
             graphics::Color::WHITE,
-        ).unwrap();
-        let mesh_selection = Mesh::new_rectangle(
-            ctx, 
-            graphics::DrawMode::Stroke( 
-                graphics::StrokeOptions::default()
-                .with_line_width(2.)
-                .with_line_join(graphics::LineJoin::Bevel)
-             ), 
-            Rect::new(
-                0.,
-                0.,
-                GRID_DIMENSION.0,
-                GRID_DIMENSION.1,
-            ), 
-            graphics::Color::CYAN,
-        ).unwrap();
-
-        let mut numbers: [Text; 10] = Default::default();
-        numbers[0] = Text::new(
-            graphics::TextFragment::new("X")
-            .scale(17.)
         )
-        .set_layout(graphics::TextLayout::center()).to_owned();
-        for i in 1..10 {
-            let number = i.to_string();
-            numbers[i] = Text::new(
-                graphics::TextFragment::new(number)
-                .scale(17.)
-            )
-            .set_layout(graphics::TextLayout::center()).to_owned();
-        }
+        .unwrap();
+        let mesh_selection = Mesh::new_rectangle(
+            ctx,
+            graphics::DrawMode::Stroke(
+                graphics::StrokeOptions::default()
+                    .with_line_width(2.)
+                    .with_line_join(graphics::LineJoin::Bevel),
+            ),
+            Rect::new(0., 0., GRID_DIMENSION.0, GRID_DIMENSION.1),
+            graphics::Color::CYAN,
+        )
+        .unwrap();
 
-        NumberBoard { rect, mesh, mesh_selection, numbers, number_selection: 0 }
+        let numbers = (0..10)
+            .map(|i| {
+                if i == 0 {
+                    Text::new(graphics::TextFragment::new("X").scale(17.))
+                        .set_layout(graphics::TextLayout::center())
+                        .to_owned()
+                } else {
+                    Text::new(graphics::TextFragment::new(i.to_string()).scale(17.))
+                        .set_layout(graphics::TextLayout::center())
+                        .to_owned()
+                }
+            })
+            .collect::<Vec<Text>>()
+            .try_into()
+            .unwrap();
+
+        NumberBoard {
+            rect,
+            mesh,
+            mesh_selection,
+            numbers,
+            number_selection: 0,
+        }
     }
 
     pub fn draw(&mut self, canvas: &mut graphics::Canvas) -> GameResult {
         for i in 0..self.rect.len() {
             if i == self.number_selection as usize {
-                canvas.draw(&self.mesh_selection, Vec2::new(self.rect[i].x, self.rect[i].y));    
+                canvas.draw(
+                    &self.mesh_selection,
+                    Vec2::new(self.rect[i].x, self.rect[i].y),
+                );
                 canvas.draw(
                     &self.numbers[i],
                     graphics::DrawParam::default()
-                    .dest(Vec2::new(
-                        self.rect[i].x + GRID_DIMENSION.0 / 2.,
-                        self.rect[i].y + GRID_DIMENSION.1 / 2.,
-                    ))
-                    .color(graphics::Color::CYAN)
-                    .z(2)
-                ); 
+                        .dest(Vec2::new(
+                            self.rect[i].x + GRID_DIMENSION.0 / 2.,
+                            self.rect[i].y + GRID_DIMENSION.1 / 2.,
+                        ))
+                        .color(graphics::Color::CYAN)
+                        .z(2),
+                );
             } else {
                 canvas.draw(&self.mesh, Vec2::new(self.rect[i].x, self.rect[i].y));
                 canvas.draw(
                     &self.numbers[i],
                     graphics::DrawParam::default()
-                    .dest(Vec2::new(
-                        self.rect[i].x + GRID_DIMENSION.0 / 2.,
-                        self.rect[i].y + GRID_DIMENSION.1 / 2.,
-                    ))
-                    .color(graphics::Color::WHITE)
-                    .z(1)
-                ); 
+                        .dest(Vec2::new(
+                            self.rect[i].x + GRID_DIMENSION.0 / 2.,
+                            self.rect[i].y + GRID_DIMENSION.1 / 2.,
+                        ))
+                        .color(graphics::Color::WHITE)
+                        .z(1),
+                );
             }
         }
         Ok(())

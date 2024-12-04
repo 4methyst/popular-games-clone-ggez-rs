@@ -46,7 +46,7 @@ impl MainMenu {
         buttons.insert(
             "Play",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(320., 200., 80., 40.),
                 Text::new(
                     graphics::TextFragment::new("PLAY")
@@ -60,7 +60,7 @@ impl MainMenu {
         buttons.insert(
             "LeaderBoard",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(280., 260., 160., 40.),
                 Text::new(
                     graphics::TextFragment::new("LEADERBOARD")
@@ -74,7 +74,7 @@ impl MainMenu {
         buttons.insert(
             "Exit",
             Button::new(
-                &ctx,
+                ctx,
                 Rect::new(320., 320., 80., 40.),
                 Text::new(
                     graphics::TextFragment::new("EXIT")
@@ -108,7 +108,7 @@ impl MainMenu {
 
 impl StateTrait for MainMenu {
     fn update(&mut self, _ctx: &Context, _addon_ctx: &mut AddOnContext) -> GameResult<Option<GameState>> {
-        if let Some(new_state) = self.change_state.clone() {
+        if let Some(new_state) = self.change_state {
             self.change_state = None;
             return Ok(Some(new_state));
         }
